@@ -2,10 +2,11 @@ import { TopNavBar } from '../components/TopNavBar'
 
 @Entry
 @Component
-struct index {
+struct Index {
   build() {
     Stack() {
       Column() {
+        Text('111')
 
       }
       TopNavBar()
