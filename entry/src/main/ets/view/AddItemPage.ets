@@ -2,7 +2,8 @@
 import { ItemViewModel, ItemInput } from '../viewmodel/ItemViewModel';
 import { ItemCategory } from '../model/ItemModel';
 import router from '@ohos.router';
-import { BusinessError } from '@ohos.base';
+import type { BusinessError } from '@kit.BasicServicesKit';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
 @Entry
 @Component
 export struct AddItemPage {
@@ -14,7 +15,12 @@ export struct AddItemPage {
   @State selectedDate: Date = new Date();
   @State selectedCategory: string = this.categories[0];
   @State imageUri: string = '';
+  @State imgDatas: string[] = [];
+  @State selectedImage: ResourceStr = '';
+  @State backBlur: boolean = false;
   @State isSubmitting: boolean = false;
+  private readonly NAV_HEIGHT: number = 85;
+  @State scrollY: number = 0;
 
   // 将分类转换为 SelectOption 数组
   private getCategoryOptions(): SelectOption[] {
@@ -26,149 +32,199 @@ export struct AddItemPage {
   }
 
   build() {
-    Scroll() {
-      Column() {
-        // 图片选择区域
+    Stack(){
+      Scroll(){
         Column() {
-          if (this.imageUri) {
-            Image(this.imageUri)
+          Column()
+            .width('100%')
+            .height(Math.max(this.NAV_HEIGHT - this.scrollY, 0))
+          // 图片选择区域
+          Text('物品图片')
+            .fontSize(14)
+            .fontWeight(FontWeight.Bold)
+            .margin({ bottom: 8 })
+          Stack({ alignContent: Alignment.Bottom }) {
+            Image(this.selectedImage)
+              .objectFit(ImageFit.Contain)
+              .borderRadius($r('sys.float.corner_radius_level5'))
               .width('100%')
-              .height('200vp')
-              .objectFit(ImageFit.Cover)
-              .borderRadius(8)
-          } else {
+              .height(200)
+
+            Button('选择图片')
+              .buttonStyle(ButtonStyleMode.NORMAL)
+              .backgroundBlurStyle(this.backBlur ? BlurStyle.BACKGROUND_THICK : BlurStyle.NONE,
+                {
+                  colorMode: ThemeColorMode.SYSTEM,
+                  adaptiveColor: AdaptiveColor.DEFAULT,
+                  scale: 1.0
+                })
+              .fontColor(this.backBlur ? $r('sys.color.font_on_primary') : $r('sys.color.font_emphasize'))
+              .height(40)
+              .fontWeight(FontWeight.Medium)
+              .fontSize($r('sys.float.Body_L'))
+              .margin({ bottom: 36 })
+              .onClick(() => {
+                try {
+                  const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+                  photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+                  photoSelectOptions.maxSelectNumber = 1;
+                  const photoPicker = new photoAccessHelper.PhotoViewPicker();
+                  photoPicker.select(photoSelectOptions)
+                    .then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+                      this.imgDatas = photoSelectResult.photoUris;
+                      this.imageUri = this.imgDatas[0];
+                      this.selectedImage = this.imgDatas[0];
+                      if (this.selectedImage.length > 0) {
+                        this.backBlur = true;
+                      }
+                      console.info(`PhotoViewPicker.select successfully, PhotoSelectResult uri: ${photoSelectResult.photoUris[0]}`);
+
+                    })
+                    .catch((err: BusinessError) => {
+                      console.info(`PhotoViewPicker.select failed with err: ${err.code}, ${err.message}`);
+                    });
+                } catch (error) {
+                  const err: BusinessError = error as BusinessError;
+                  console.error(`PhotoViewPicker failed with err: ${err.code}, ${err.message}`);
+                }
+              })
+          }
+          .width('95%')
+
+          // 表单区域
+          Column() {
+            // 物品名称
             Column() {
-              Text('点击上传图片')
-                .fontSize(16)
-                .fontColor('#999')
+              Text('物品名称')
+                .fontSize(14)
+                .fontWeight(FontWeight.Bold)
+                .margin({ bottom: 8 })
+
+              TextInput({ placeholder: '请输入物品名称' })
+                .width('100%')
+                .height('44vp')
+                .backgroundColor('#F5F5F5')
+                .borderRadius(8)
+                .padding({ left: 12, right: 12 })
+                .onChange((value: string) => {
+                  this.name = value;
+                })
             }
-            .width('100%')
-            .height('200vp')
-            .backgroundColor('#F0F0F0')
-            .borderRadius(8)
-            .justifyContent(FlexAlign.Center)
-          }
+            .margin({ bottom: 20, top: 20 })
 
-          Button('选择图片')
-            .width('100%')
-            .height('44vp')
-            .backgroundColor('#007AFF')
-            .margin({ top: 10 })
-            .onClick(() => this.selectImage())
+            // 物品价格
+            Column() {
+              Text('物品价格')
+                .fontSize(14)
+                .fontWeight(FontWeight.Bold)
+                .margin({ bottom: 8 })
+
+              TextInput({ placeholder: '请输入物品价格' })
+                .width('100%')
+                .height('44vp')
+                .backgroundColor('#F5F5F5')
+                .borderRadius(8)
+                .padding({ left: 12, right: 12 })
+                .type(InputType.Number)
+                .onChange((value: string) => {
+                  this.price = value;
+                })
+            }
+            .margin({ bottom: 20, top: 20 })
+
+            // 获取时间
+            Column() {
+              Text('获取时间')
+                .fontSize(14)
+                .fontWeight(FontWeight.Bold)
+                .margin({ bottom: 8 })
+
+              DatePicker({
+                start: new Date('2000-01-01'),
+                end: new Date(),
+                selected: this.selectedDate
+              })
+                .width('100%')
+                .onChange((value: DatePickerResult) => {
+                  if (value.year !== undefined && value.month !== undefined && value.day !== undefined) {
+                    this.selectedDate = new Date(value.year, value.month - 1, value.day);
+                  }
+                })
+            }
+            .margin({ bottom: 20, top: 20 })
+
+            // 物品分类 - 使用正确的 SelectOption 类型
+            Column() {
+              Text('物品分类')
+                .fontSize(14)
+                .fontWeight(FontWeight.Bold)
+                .margin({ bottom: 8 })
+
+              Select(this.getCategoryOptions())
+                .width('100%')
+                .value(this.selectedCategory)
+                .onSelect((index: number) => {
+                  if (index >= 0 && index < this.categories.length) {
+                    this.selectedCategory = this.categories[index];
+                  }
+                })
+            }
+            .margin({ bottom: 20, top: 20 })
+
+            // 保存按钮
+            Button(this.isSubmitting ? '保存中...' : '保存')
+              .width('100%')
+              .height('48vp')
+              .backgroundColor('#007AFF')
+              .fontColor(Color.White)
+              .fontSize(16)
+              .margin({ top: 40, bottom: 40 })
+              .onClick(() => {
+                this.saveItem();
+              })
+              .enabled(!this.isSubmitting)
+          }
+          .padding({ left: 20, right: 20 })
+          .margin({bottom:10})
+          .width('95%')
         }
-        .padding({ left: 20, right: 20, top: 20 })
-
-        // 表单区域
-        Column() {
-          // 物品名称
-          Column() {
-            Text('物品名称')
-              .fontSize(14)
-              .fontWeight(FontWeight.Bold)
-              .margin({ bottom: 8 })
-
-            TextInput({ placeholder: '请输入物品名称' })
-              .width('100%')
-              .height('44vp')
-              .backgroundColor('#F5F5F5')
-              .borderRadius(8)
-              .padding({ left: 12, right: 12 })
-              .onChange((value: string) => {
-                this.name = value;
-              })
-          }
-          .margin({ bottom: 20, top: 20 })
-
-          // 物品价格
-          Column() {
-            Text('物品价格')
-              .fontSize(14)
-              .fontWeight(FontWeight.Bold)
-              .margin({ bottom: 8 })
-
-            TextInput({ placeholder: '请输入物品价格' })
-              .width('100%')
-              .height('44vp')
-              .backgroundColor('#F5F5F5')
-              .borderRadius(8)
-              .padding({ left: 12, right: 12 })
-              .type(InputType.Number)
-              .onChange((value: string) => {
-                this.price = value;
-              })
-          }
-          .margin({ bottom: 20, top: 20 })
-
-          // 获取时间
-          Column() {
-            Text('获取时间')
-              .fontSize(14)
-              .fontWeight(FontWeight.Bold)
-              .margin({ bottom: 8 })
-
-            DatePicker({
-              start: new Date('2000-01-01'),
-              end: new Date(),
-              selected: this.selectedDate
-            })
-              .width('100%')
-              .onChange((value: DatePickerResult) => {
-                if (value.year !== undefined && value.month !== undefined && value.day !== undefined) {
-                  this.selectedDate = new Date(value.year, value.month - 1, value.day);
-                }
-              })
-          }
-          .margin({ bottom: 20, top: 20 })
-
-          // 物品分类 - 使用正确的 SelectOption 类型
-          Column() {
-            Text('物品分类')
-              .fontSize(14)
-              .fontWeight(FontWeight.Bold)
-              .margin({ bottom: 8 })
-
-            Select(this.getCategoryOptions())
-              .width('100%')
-              .value(this.selectedCategory)
-              .onSelect((index: number) => {
-                if (index >= 0 && index < this.categories.length) {
-                  this.selectedCategory = this.categories[index];
-                }
-              })
-          }
-          .margin({ bottom: 20, top: 20 })
-
-          // 保存按钮
-          Button(this.isSubmitting ? '保存中...' : '保存')
-            .width('100%')
-            .height('48vp')
-            .backgroundColor('#007AFF')
-            .fontColor(Color.White)
-            .fontSize(16)
-            .margin({ top: 40, bottom: 40 })
-            .onClick(() => {
-              this.saveItem();
-            })
-            .enabled(!this.isSubmitting)
-        }
-        .padding({ left: 20, right: 20 })
       }
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(Color.White)
-  }
+      Column() {
+        Column() {
+          Text('\n').fontSize(14)
+        }
+        Row() {
+          Text('添加物品')
+            .fontSize(21)
+            .fontWeight(FontWeight.Bold)
+            .margin({ left: 15 })
+          Row() {
+            Image($r('app.media.back'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(() => router.back())
+            Image($r('app.media.add'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(() => {
+                this.saveItem();
+              })
+          }
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
+        .height(45)
 
-  // 选择图片
-  private async selectImage() {
-    try {
-      console.info('选择图片功能');
-      // 模拟选择图片
-      this.imageUri = 'file://media/thumbnail/sample_image';
-    } catch (error) {
-      const err = error as BusinessError<object>;
-      console.error(`选择图片失败: ${err.code}, ${err.message}`);
-      this.showAlertDialog('错误', '选择图片失败，请重试');
+        Rect()
+          .width('100%')
+          .height(0.5)
+          .fill("#a6d5d5d5")
+          .position({ x: 0, y: 78 })
+
+      }
+      .backgroundBlurStyle(BlurStyle.Thin)
+      .position({ x: 0, y: 0 })
+      .width('100%')
     }
   }
 
@@ -182,11 +238,6 @@ export struct AddItemPage {
 
     if (!this.price.trim() || isNaN(Number(this.price)) || Number(this.price) <= 0) {
       this.showAlertDialog('提示', '请输入有效的价格');
-      return;
-    }
-
-    if (!this.imageUri) {
-      this.showAlertDialog('提示', '请上传物品图片');
       return;
     }
 

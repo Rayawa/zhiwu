@@ -38,90 +38,138 @@ export struct MainPage {
   private dataSource: ItemDataSource = new ItemDataSource();
   @State items: Item[] = [];
   @State isLoading: boolean = true;
+  private readonly NAV_HEIGHT: number = 80;
+  @State scrollY: number = 0;
 
-  // 创建 @Link 变量
-  @Link itemClickHandler: (item: Item) => void;
-  @Link deleteClickHandler: (itemId: string) => void;
-
-  aboutToAppear() {
-    // 初始化 @Link 变量
-    this.itemClickHandler = (item: Item) => {
-      this.navigateToDetail(item);
-    };
-    this.deleteClickHandler = (itemId: string) => {
-      this.deleteItem(itemId);
-    };
-
-    this.loadItems();
+  async aboutToAppear() {
+    await this.loadItems();
+  }
+  async onPageShow() {
+    await this.loadItems();
   }
 
   build() {
-    Column() {
-      if (this.isLoading) {
-        LoadingProgress()
-          .width(50)
-          .height(50)
-          .color(Color.Blue)
-          .margin({ top: 100 })
-      } else if (this.items.length === 0) {
-        Column() {
-          Image($r('app.media.noitem'))
-            .width(200)
-            .height(200)
-            .margin({ bottom: 20 })
+    Stack(){
+      Column() {
+        Column()
+          .width('100%')
+          .height(Math.max(this.NAV_HEIGHT - this.scrollY, 0))
+        if (this.isLoading) {
+          LoadingProgress()
+            .width(50)
+            .height(50)
+            .color(Color.Blue)
+            .margin({ top: 100 })
+        } else if (this.items.length === 0) {
+          Column() {
+            Image($r('app.media.noItem'))
+              .width(250)
+              .height(250)
+              .margin({ top:40, bottom: 20 })
 
-          Text('还没有添加任何物品')
-            .fontSize(16)
-            .fontColor('#999')
+            Text('还没有添加任何物品')
+              .fontSize(20)
+              .fontColor('#999')
+          }
+          .width('100%')
+          .height('100%')
+
+        } else {
+          Scroll() {
+            Grid() {
+              ForEach(this.items, (item: Item) => {
+                GridItem() {
+                  ItemCard({
+                    item: item,
+                    onItemClick: () => {
+                      this.navigateToDetail(item);
+                    },
+                    onDeleteClick: () => {
+                      this.deleteItem(item.id);
+                    }
+                  })
+                }
+                .width('100%')
+              }, (item: Item) => item.id)
+            }
+            .columnsTemplate('1fr 1fr')
+            .columnsGap(10)
+            .rowsGap(10)
+            .padding({
+              left: 10,
+              right: 10,
+              top: 10,
+              bottom: 80
+            })
+          }
+          .onScrollFrameBegin((offset: number, state: ScrollState) => {
+            if (offset < -100 && state === ScrollState.Scroll) {
+              this.loadItems();
+            }
+            return { offsetRemain: offset };
+          })
+        }
+
+        Button() {
+          Image($r('app.media.addItem'))
+            .width(24)
+            .height(24)
+        }
+        .type(ButtonType.Circle)
+        .backgroundColor('#ff66a7ee')
+        .width(50)
+        .height(50)
+        .shadow({
+          radius: 4,
+          color: '#182431',
+          offsetX: 2,
+          offsetY: 4
+        })
+        .stateEffect(true)
+        .position({ x: 20, y: '90%' })
+        .zIndex(999)
+        .hitTestBehavior(HitTestMode.Transparent)
+        .onClick((): void => this.navigateToAdd())
+      }
+      .width('100%')
+      .margin({bottom:10})
+
+      Column() {
+        Column() {
+          Text('\n').fontSize(14)
+        }
+
+        Row() {
+          Text('我的物品')
+            .fontSize(21)
+            .fontWeight(FontWeight.Bold)
+            .margin({ left: 15 })
+          Row() {
+            Image($r('app.media.statistics'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(() => router.pushUrl({ url: 'view/statistic' }))
+            Image($r('app.media.user'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(() => router.pushUrl({ url: 'view/user' }))
+          }
         }
         .width('100%')
-        .height('100%')
-        .justifyContent(FlexAlign.Center)
-      } else {
-        Scroll() {
-          Grid() {
-            ForEach(this.items, (item: Item) => {
-              GridItem() {
-                ItemCard({
-                  item: item,
-                  itemClickHandler: this.itemClickHandler,
-                  deleteClickHandler: this.deleteClickHandler
-                })
-              }
-              .width('100%')
-            }, (item: Item) => item.id)
-          }
-          .columnsTemplate('1fr 1fr')
-          .columnsGap(10)
-          .rowsGap(10)
-          .padding({ left: 10, right: 10, top: 10, bottom: 80 })
-        }
-        .onScrollFrameBegin((offset: number, state: ScrollState) => {
-          // 手动实现下拉刷新
-          if (offset < -100 && state === ScrollState.Scroll) {
-            this.loadItems();
-          }
-          // 必须返回这个对象
-          return { offsetRemain: offset };
-        })
-      }
+        .justifyContent(FlexAlign.SpaceBetween)
+        .height(45)
 
-      Button() {
-        Image($r('app.media.add'))
-          .width(24)
-          .height(24)
-          .colorBlend(Color.White)
+        Rect()
+          .width('100%')
+          .height(0.5)
+          .fill("#a6d5d5d5")
+          .position({ x: 0, y: 78 })
+
       }
-      .width(56)
-      .height(56)
-      .backgroundColor('#007AFF')
-      .borderRadius(28)
-      .position({ x: '50%', y: '95%' })
-      .margin({ left: -28 })
-      .shadow({ radius: 4, color: '#00000033', offsetX: 0, offsetY: 2 })
-      .onClick((): void => this.navigateToAdd())
+      .backgroundBlurStyle(BlurStyle.Thin)
+      .position({ x: 0, y: 0 })
+      .width('100%')
     }
-    .width('100%')
   }
 
   private async loadItems() {
