@@ -2,7 +2,12 @@
   "src": [
     "view/MainPage",
     "view/AddItemPage",
-    "view/ItemDetailPage"
+    "view/ItemDetailPage",
+    "view/Statistic",
+    "view/user",
+    "user/about",
+    "user/contact",
+    "user/log"
 
   ]
 }

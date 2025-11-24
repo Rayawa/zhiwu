@@ -8,6 +8,8 @@ export struct ItemDetailPage {
   private itemViewModel: ItemViewModel = new ItemViewModel();
   @State item: Item | null = null;
   @State isLoading: boolean = true;
+  private readonly NAV_HEIGHT: number = 85;
+  @State scrollY: number = 0;
 
   async aboutToAppear() {
     // 正确获取路由参数
@@ -21,77 +23,117 @@ export struct ItemDetailPage {
   }
 
   build() {
-    Column() {
-      if (this.isLoading) {
-        Text('加载中...')
-          .fontSize(16)
-          .margin({ top: 100 })
-      } else if (!this.item) {
-        Text('物品不存在')
-          .fontSize(16)
-          .margin({ top: 100 })
-      } else {
-        // 物品图片
-        Image(this.item.imageUri)
+    Stack(){
+      Column() {
+        Column()
           .width('100%')
-          .height(300)
-          .objectFit(ImageFit.Cover)
+          .height(Math.max(this.NAV_HEIGHT - this.scrollY, 0))
+        if (this.isLoading) {
+          Text('加载中...')
+            .fontSize(16)
+            .margin({ top: 100 })
+        } else if (!this.item) {
+          Text('物品不存在')
+            .fontSize(16)
+            .margin({ top: 100 })
+        } else {
+          // 物品图片
+          Image(this.item.imageUri)
+            .width('95%')
+            .height(300)
+            .objectFit(ImageFit.Cover)
 
-        // 物品信息
+          // 物品信息
+          Column() {
+            Text(this.item.name)
+              .fontSize(24)
+              .fontWeight(FontWeight.Bold)
+              .margin({ top: 20 })
+
+            Row() {
+              Text(`价格: ¥${this.item.price}`)
+                .fontSize(18)
+                .fontColor('#FF6B6B')
+
+              Text(`日均: ¥${this.item.dailyAveragePrice}`)
+                .fontSize(16)
+                .fontColor('#666')
+                .margin({ left: 10 })
+            }
+            .margin({ top: 16 })
+
+            Row() {
+              Text(`分类: ${this.item.category}`)
+                .fontSize(16)
+                .fontColor('#666')
+
+              Text(`获取时间: ${this.formatDate(this.item.acquireDate)}`)
+                .fontSize(16)
+                .fontColor('#666')
+                .margin({ left: 10 })
+            }
+            .margin({ top: 12 })
+
+            // 操作按钮
+            Row() {
+              Button('编辑')
+                .width('48%')
+                .height(44)
+                .backgroundColor('#007AFF')
+                .margin({ top: 40 })
+                .onClick((): void => this.editItem())
+
+              Button('删除')
+                .width('48%')
+                .height(44)
+                .backgroundColor('#FF4D4F')
+                .margin({ top: 40, left: '4%' })
+                .onClick((): void => this.showDeleteDialog())
+            }
+          }
+          .padding({ top: 20, bottom: 20 })
+          .padding({ left: 16, right: 16 })
+        }
+
+      }
+      .width('95%')
+
+      Column() {
         Column() {
-          Text(this.item.name)
-            .fontSize(24)
+          Text('\n').fontSize(14)
+        }
+
+        Row() {
+          Text('我的物品')
+            .fontSize(21)
             .fontWeight(FontWeight.Bold)
-            .margin({ top: 20 })
-
+            .margin({ left: 15 })
           Row() {
-            Text(`价格: ¥${this.item.price}`)
-              .fontSize(18)
-              .fontColor('#FF6B6B')
-
-            Text(`日均: ¥${this.item.dailyAveragePrice}`)
-              .fontSize(16)
-              .fontColor('#666')
-              .margin({ left: 'auto' })
-          }
-          .margin({ top: 16 })
-
-          Row() {
-            Text(`分类: ${this.item.category}`)
-              .fontSize(16)
-              .fontColor('#666')
-
-            Text(`获取时间: ${this.formatDate(this.item.acquireDate)}`)
-              .fontSize(16)
-              .fontColor('#666')
-              .margin({ left: 'auto' })
-          }
-          .margin({ top: 12 })
-
-          // 操作按钮
-          Row() {
-            Button('编辑')
-              .width('48%')
-              .height(44)
-              .backgroundColor('#007AFF')
-              .margin({ top: 40 })
-              .onClick((): void => this.editItem())
-
-            Button('删除')
-              .width('48%')
-              .height(44)
-              .backgroundColor('#FF4D4F')
-              .margin({ top: 40, left: '4%' })
-              .onClick((): void => this.showDeleteDialog())
+            Image($r('app.media.statistics'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(() => router.pushUrl({ url: 'pages/user' }))
+            Image($r('app.media.user'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(() => router.pushUrl({ url: 'pages/user' }))
           }
         }
-        .padding({ top: 20, bottom: 20 })
-        .padding({ left: 16, right: 16 })
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
+        .height(45)
+
+        Rect()
+          .width('100%')
+          .height(0.5)
+          .fill("#a6d5d5d5")
+          .position({ x: 0, y: 78 })
+
       }
+      .backgroundBlurStyle(BlurStyle.Thin)
+      .position({ x: 0, y: 0 })
+      .width('100%')
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(Color.White)
   }
 
   private async loadItemDetail(itemId: string) {

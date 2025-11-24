@@ -1,10 +1,28 @@
+// ItemCard.ets
 import { Item } from '../../model/ItemModel';
 
 @Component
 export struct ItemCard {
   @Prop item: Item;
-  @Link itemClickHandler: (item: Item) => void;
-  @Link deleteClickHandler: (itemId: string) => void;
+  private onItemClick: () => void = () => {};
+  private onDeleteClick: () => void = () => {};
+
+
+  // 使用对象参数接收所有属性，并调用super()
+  constructor(params: {
+    item: Item;
+    onItemClick?: () => void;
+    onDeleteClick?: () => void;
+  }) {
+    super(); // 添加super调用
+    this.item = params.item;
+    if (params.onItemClick) {
+      this.onItemClick = params.onItemClick;
+    }
+    if (params.onDeleteClick) {
+      this.onDeleteClick = params.onDeleteClick;
+    }
+  }
 
   build() {
     Column() {
@@ -30,7 +48,7 @@ export struct ItemCard {
           Text(`日均: ¥${this.item.dailyAveragePrice}`)
             .fontSize(12)
             .fontColor('#666')
-            .margin({ left: 'auto' })
+            .margin({ left: 10 })
         }
         .margin({ top: 4 })
 
@@ -45,7 +63,7 @@ export struct ItemCard {
           Text(this.formatDate(this.item.acquireDate))
             .fontSize(12)
             .fontColor('#999')
-            .margin({ left: 'auto' })
+            .margin({ left: 10 })
         }
         .margin({ top: 4 })
       }
@@ -58,12 +76,12 @@ export struct ItemCard {
     .shadow({ radius: 4, color: '#0000001A', offsetX: 0, offsetY: 2 })
     .padding(8)
     .onClick(() => {
-      this.itemClickHandler(this.item);
+      this.onItemClick();
     })
     .gesture(
       LongPressGesture({ repeat: false })
         .onAction(() => {
-          this.deleteClickHandler(this.item.id);
+          this.onDeleteClick();
         })
     )
   }
