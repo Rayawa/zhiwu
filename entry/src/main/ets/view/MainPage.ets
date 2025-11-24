@@ -39,8 +39,20 @@ export struct MainPage {
   @State items: Item[] = [];
   @State isLoading: boolean = true;
 
-  async aboutToAppear() {
-    await this.loadItems();
+  // 创建 @Link 变量
+  @Link itemClickHandler: (item: Item) => void;
+  @Link deleteClickHandler: (itemId: string) => void;
+
+  aboutToAppear() {
+    // 初始化 @Link 变量
+    this.itemClickHandler = (item: Item) => {
+      this.navigateToDetail(item);
+    };
+    this.deleteClickHandler = (itemId: string) => {
+      this.deleteItem(itemId);
+    };
+
+    this.loadItems();
   }
 
   build() {
@@ -67,14 +79,13 @@ export struct MainPage {
         .justifyContent(FlexAlign.Center)
       } else {
         Scroll() {
-          // 使用 Grid 组件替代 WaterFlow
           Grid() {
             ForEach(this.items, (item: Item) => {
               GridItem() {
                 ItemCard({
                   item: item,
-                  onItemClick: (item: Item): void => this.navigateToDetail(item),
-                  onDeleteClick: (itemId: string): Promise<void> => this.deleteItem(itemId)
+                  itemClickHandler: this.itemClickHandler,
+                  deleteClickHandler: this.deleteClickHandler
                 })
               }
               .width('100%')

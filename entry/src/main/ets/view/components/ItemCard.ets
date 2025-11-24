@@ -1,17 +1,16 @@
-// 物品卡片组件
 import { Item } from '../../model/ItemModel';
 
 @Component
 export struct ItemCard {
   @Prop item: Item;
-  @Prop onItemClick: (item: Item) => void;
-  @Prop onDeleteClick: (itemId: string) => void;
+  @Link itemClickHandler: (item: Item) => void;
+  @Link deleteClickHandler: (itemId: string) => void;
 
   build() {
     Column() {
       Image(this.item.imageUri)
         .width('100%')
-        .height(200)
+        .height('200vp')
         .objectFit(ImageFit.Cover)
         .borderRadius(8)
 
@@ -58,32 +57,18 @@ export struct ItemCard {
     .borderRadius(12)
     .shadow({ radius: 4, color: '#0000001A', offsetX: 0, offsetY: 2 })
     .padding(8)
-    .onClick(() => this.onItemClick(this.item))
+    .onClick(() => {
+      this.itemClickHandler(this.item);
+    })
     .gesture(
-      // 使用长按手势触发删除
       LongPressGesture({ repeat: false })
         .onAction(() => {
-          this.showDeleteDialog();
+          this.deleteClickHandler(this.item.id);
         })
     )
   }
 
   private formatDate(date: Date): string {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-  }
-
-  private showDeleteDialog(): void {
-    AlertDialog.show({
-      title: '删除物品',
-      message: `确定要删除"${this.item.name}"吗？`,
-      confirm: {
-        value: '删除',
-        action: () => this.onDeleteClick(this.item.id),
-        fontColor: '#FF4D4F'
-      },
-      cancel: () => {
-        // 取消操作
-      }
-    });
   }
 }
