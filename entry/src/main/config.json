@@ -1,0 +1,49 @@
+{
+  "app": {
+    "bundleName": "com.example.itemmanager",
+    "vendor": "example",
+    "versionCode": 1000000,
+    "versionName": "1.0.0",
+    "icon": "$media:app_icon",
+    "label": "$string:app_name"
+  },
+  "deviceConfig": {
+    "default": {}
+  },
+  "module": {
+    "package": "com.example.itemmanager",
+    "name": ".ItemManager",
+    "mainAbility": "com.example.itemmanager.MainAbility",
+    "deviceType": [
+      "phone",
+      "tablet"
+    ],
+    "distro": {
+      "deliveryWithInstall": true,
+      "moduleName": "entry",
+      "moduleType": "entry"
+    },
+    "abilities": [
+      {
+        "name": "com.example.itemmanager.MainAbility",
+        "type": "page",
+        "visible": true,
+        "launchType": "standard"
+      }
+    ],
+    "reqPermissions": [
+      {
+        "name": "ohos.permission.READ_MEDIA",
+        "reason": "用于选择物品图片"
+      },
+      {
+        "name": "ohos.permission.WRITE_MEDIA",
+        "reason": "用于保存物品图片"
+      },
+      {
+        "name": "ohos.permission.CAMERA",
+        "reason": "用于拍摄物品图片"
+      }
+    ]
+  }
+}
