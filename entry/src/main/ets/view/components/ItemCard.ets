@@ -81,7 +81,6 @@ export struct ItemCard {
     })
     .gesture(
       LongPressGesture({ repeat: false }).onAction(() => {this.onDeleteClick();})
-
     )
   }
 
