@@ -2,6 +2,7 @@
 import { ItemViewModel } from '../viewmodel/ItemViewModel';
 import { Item } from '../model/ItemModel';
 import { ItemCard } from './components/ItemCard';
+import { ListCard } from './components/ListCard'
 import router from '@ohos.router';
 import { prompt } from '@kit.ArkUI';
 
@@ -94,7 +95,7 @@ export struct MainPage {
             List({ space: 12 }) {
               LazyForEach(this.dataSource, (item: Item) => {
                 ListItem() {
-                  ItemCard({
+                  ListCard({
                     item: item,
                     onItemClick: () => {this.navigateToDetail(item);},
                     onDeleteClick: () => {this.deleteItem(item.id);}
@@ -156,6 +157,7 @@ export struct MainPage {
         .position({ x: 20, y: '80%' })
         .alignItems(HorizontalAlign.Start)
       }
+      .backgroundColor($r('app.color.backcolor'))
       .width('100%')
 
       Column() {
