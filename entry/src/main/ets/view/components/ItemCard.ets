@@ -35,37 +35,26 @@ export struct ItemCard {
         Text(this.item.name)
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .margin({ top: 8 })
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
-
-        Row() {
-          Text(`¥${this.item.price}`)
-            .fontSize(14)
-            .fontColor($r('app.color.border'))
-
-          Text(`日均: ¥${this.item.dailyAveragePrice}`)
-            .fontSize(12)
-            .fontColor('#666')
-            .margin({ left: 10 })
-        }
-        .margin({ top: 4 })
-
-        Row() {
-          Text(this.item.category)
-            .fontSize(12)
-            .fontColor('#999')
-            .padding({ left: 8, right: 8, top: 2, bottom: 2 })
-            .borderRadius(12)
-
-          Text(this.formatDate(this.item.acquireDate))
-            .fontSize(12)
-            .fontColor('#999')
-            .margin({ left: 10 })
-        }
-        .margin({ top: 4 })
+          .margin({top:8,bottom:1})
+        Text(`¥${this.item.price}`)
+          .fontSize(14)
+          .fontColor($r('app.color.border'))
+          .margin({bottom:1})
+        Text(`日均: ¥${this.item.dailyAveragePrice}`)
+          .fontSize(12)
+          .fontColor('#666')
+          .margin({bottom:1})
+        Text(this.item.category)
+          .fontSize(12)
+          .fontColor('#999')
+          .margin({bottom:1})
+          .borderRadius(12)
+        Text(this.formatDate(this.item.acquireDate))
+          .fontSize(12)
+          .fontColor('#999')
       }
-      .padding({ left: 8, right: 8, bottom: 8 })
       .width('100%')
     }
     .width('100%')

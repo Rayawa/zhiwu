@@ -7,7 +7,7 @@
     "view/user",
     "user/about",
     "user/contact",
-    "user/log"
-
+    "user/log",
+    "view/ListPage"
   ]
 }

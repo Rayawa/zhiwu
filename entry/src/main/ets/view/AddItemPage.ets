@@ -4,6 +4,8 @@ import { ItemCategory } from '../model/ItemModel';
 import router from '@ohos.router';
 import type { BusinessError } from '@kit.BasicServicesKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
+import { prompt } from '@kit.ArkUI';
+
 @Entry
 @Component
 export struct AddItemPage {
@@ -245,19 +247,18 @@ export struct AddItemPage {
   private async saveItem() {
     // 表单验证
     if (!this.name.trim()) {
-      this.showAlertDialog('提示', '请输入物品名称');
+      prompt.showToast({ message: '请输入物品名称', duration: 500 });
       return;
     }
 
     if (!this.price.trim() || isNaN(Number(this.price)) || Number(this.price) <= 0) {
-      this.showAlertDialog('提示', '请输入有效的价格');
+      prompt.showToast({ message: '请输入有效的价格', duration: 500 });
       return;
     }
 
     this.isSubmitting = true;
 
     try {
-      // 创建符合 ItemInput 接口的明确类型对象
       const itemInput: ItemInput = {
         name: this.name.trim(),
         price: Number(this.price),
@@ -268,30 +269,22 @@ export struct AddItemPage {
 
       await this.itemViewModel.addItem(itemInput);
 
-      // 保存成功，返回主页面
-      this.showAlertDialog('成功', '物品添加成功', () => {
-        router.back();
+      prompt.showToast({
+        message: '物品添加成功',
+        duration: 1000
       });
+      setTimeout(() => {
+        router.back();
+      }, 500);
+
     } catch (error) {
       console.error('保存物品失败:', error);
-      this.showAlertDialog('错误', '保存失败，请重试');
+      prompt.showToast({
+        message: '保存失败，请重试',
+        duration: 1000
+      });
+
       this.isSubmitting = false;
     }
-  }
-
-  // 显示弹窗
-  private showAlertDialog(title: string, message: string, callback?: () => void) {
-    AlertDialog.show({
-      title: title,
-      message: message,
-      confirm: {
-        value: '确定',
-        action: () => {
-          if (callback) {
-            callback();
-          }
-        }
-      }
-    });
   }
 }

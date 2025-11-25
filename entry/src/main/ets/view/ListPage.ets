@@ -1,4 +1,4 @@
-// 主页面，展示物品列表（WaterFlow 版本）
+// 主页面，展示物品列表（List 版本）
 import { ItemViewModel } from '../viewmodel/ItemViewModel';
 import { Item } from '../model/ItemModel';
 import { ItemCard } from './components/ItemCard';
@@ -38,9 +38,6 @@ export struct MainPage {
   private dataSource: ItemDataSource = new ItemDataSource();
   @State items: Item[] = [];
   @State isLoading: boolean = true;
-  @State columnMode: number = 3;
-  @State columnsTemplateWidth: string = '1fr 1fr 1fr';
-  @State WaterFlow: boolean = true;
 
   async aboutToAppear() {
     await this.loadItems();
@@ -71,43 +68,11 @@ export struct MainPage {
           .width('100%')
           .height('100%')
         } else {
-          if(this.WaterFlow){
-            WaterFlow() {
-              LazyForEach(this.dataSource, (item: Item) => {
-                FlowItem() {
-                  ItemCard({
-                    item: item,
-                    onItemClick: () => {this.navigateToDetail(item);},
-                    onDeleteClick: () => {this.deleteItem(item.id);}
-                  })
-                }
-                .width('100%')
-                .borderRadius(12)
-              }, (item: Item) => item.id)
-            }
-            .cachedCount(3)
-            .columnsTemplate(this.columnsTemplateWidth)
-            .columnsGap(6)
-            .rowsGap(6)
-          }
-          else{
-            List({ space: 12 }) {
-              LazyForEach(this.dataSource, (item: Item) => {
-                ListItem() {
-                  ItemCard({
-                    item: item,
-                    onItemClick: () => {this.navigateToDetail(item);},
-                    onDeleteClick: () => {this.deleteItem(item.id);}
-                  })
-                }
-                .borderRadius(12)
-              }, (item: Item) => item.id)
-            }
-            .width('100%')
-            .layoutWeight(1) // 占据剩余空间
-            .cachedCount(3)
-          }
+          // 使用 List 替代 WaterFlow
+
         }
+
+        // 浮动按钮容器
         Column(){
           Button() {
             Image($r('app.media.addItem'))
@@ -126,38 +91,16 @@ export struct MainPage {
           })
           .stateEffect(true)
           .zIndex(999)
-          .margin({ bottom: 12 })
           .hitTestBehavior(HitTestMode.Transparent)
           .onClick((): void => this.navigateToAdd())
-          if(this.WaterFlow){
-            Button() {
-              Image($r('app.media.switch'))
-                .width(24)
-                .height(24)
-            }
-            .type(ButtonType.Circle)
-            .backgroundColor($r('app.color.button'))
-            .width(50)
-            .height(50)
-            .shadow({
-              radius: 4,
-              color: '#182431',
-              offsetX: 2,
-              offsetY: 4
-            })
-            .stateEffect(true)
-            .zIndex(999)
-            .hitTestBehavior(HitTestMode.Transparent)
-            .onClick(() => {
-              this.cycleColumnMode();
-            })
-          }
         }
         .position({ x: 20, y: '80%' })
         .alignItems(HorizontalAlign.Start)
       }
       .width('100%')
+      .height('100%')
 
+      // 顶部导航栏
       Column() {
         Column() {
           Text('\n').fontSize(14)
@@ -169,10 +112,6 @@ export struct MainPage {
             .margin({ left: 15 })
 
           Row() {
-            Image($r('app.media.switch'))
-              .height(24).width(24)
-              .margin({ right: 30 })
-              .onClick(() => {this.WaterFlow=!this.WaterFlow;})
             Image($r('app.media.statistics'))
               .height(24).width(24)
               .margin({ right: 30 })
@@ -198,35 +137,6 @@ export struct MainPage {
       .position({ x: 0, y: 0 })
       .width('100%')
     }
-  }
-
-  private cycleColumnMode() {
-    this.columnMode = (this.columnMode - 1) % 3 + 2;
-    this.updateColumnsTemplate();
-  }
-
-  private updateColumnsTemplate() {
-    let columnText = '';
-    switch (this.columnMode) {
-      case 2:
-        this.columnsTemplateWidth = '1fr 1fr';
-        columnText = '两列';
-        break;
-      case 3:
-        this.columnsTemplateWidth = '1fr 1fr 1fr';
-        columnText = '三列';
-        break;
-      case 4:
-        this.columnsTemplateWidth = '1fr 1fr 1fr 1fr';
-        columnText = '四列';
-        break;
-    }
-
-    prompt.showToast({
-      message: `列数切换为${columnText}`,
-      duration: 500
-    });
-    console.log(`列数切换为: ${columnText}`);
   }
 
   private async loadItems() {
