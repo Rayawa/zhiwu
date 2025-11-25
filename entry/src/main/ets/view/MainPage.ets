@@ -138,7 +138,7 @@ export struct MainPage {
         .margin({ bottom: 12 })
         .hitTestBehavior(HitTestMode.Transparent)
         .onClick((): void => this.navigateToAdd())
-        .position({ x: 20, y: '80%' })
+        .position({ x: 20, y: '90%' })
 
       }
       .gesture(
