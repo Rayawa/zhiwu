@@ -9,12 +9,28 @@
       "value": "#F8F8F8"
     },
     {
+      "name": "backcolor",
+      "value": "#F2F7FF"
+    },
+    {
+      "name": "diff_background",
+      "value": "#E3F2FD"
+    },
+    {
       "name": "border",
-      "value": "#DC2626"
+      "value": "#2196F3"
+    },
+    {
+      "name": "price",
+      "value": "#E53935"
+    },
+    {
+      "name": "diff_content",
+      "value": "#1976D2"
     },
     {
       "name": "button",
-      "value": "#EF4444"
+      "value": "#42A5F5"
     }
   ]
 }
