@@ -3,6 +3,7 @@ import { ItemViewModel } from '../viewmodel/ItemViewModel';
 import { Item } from '../model/ItemModel';
 import { ItemCard } from './components/ItemCard';
 import router from '@ohos.router';
+import { prompt } from '@kit.ArkUI';
 
 class ItemDataSource implements IDataSource {
   private data: Item[] = []
@@ -37,6 +38,9 @@ export struct MainPage {
   private dataSource: ItemDataSource = new ItemDataSource();
   @State items: Item[] = [];
   @State isLoading: boolean = true;
+  @State columnMode: number = 3;
+  @State columnsTemplateWidth: string = '1fr 1fr 1fr';
+  @State WaterFlow: boolean = true;
 
   async aboutToAppear() {
     await this.loadItems();
@@ -67,59 +71,92 @@ export struct MainPage {
           .width('100%')
           .height('100%')
         } else {
-          WaterFlow() {
-            LazyForEach(this.dataSource, (item: Item) => {
-              FlowItem() {
-                ItemCard({
-                  item: item,
-                  onItemClick: () => {this.navigateToDetail(item);},
-                  onDeleteClick: () => {this.deleteItem(item.id);}
-                })
-              }
-              .width('100%')
-              .borderRadius(12)
-            }, (item: Item) => item.id)
-          }
-          .cachedCount(3)
-          .columnsTemplate('1fr 1fr')
-          .columnsGap(6)
-          .rowsGap(6)
-          .padding({
-            left: 10,
-            right: 10,
-            top: 10,
-            bottom: 80
-          })
-          .onScrollFrameBegin((offset: number) => {
-            if (offset < -100) {
-              this.loadItems();
+          if(this.WaterFlow){
+            WaterFlow() {
+              LazyForEach(this.dataSource, (item: Item) => {
+                FlowItem() {
+                  ItemCard({
+                    item: item,
+                    onItemClick: () => {this.navigateToDetail(item);},
+                    onDeleteClick: () => {this.deleteItem(item.id);}
+                  })
+                }
+                .width('100%')
+                .borderRadius(12)
+              }, (item: Item) => item.id)
             }
-            return { offsetRemain: offset };
+            .cachedCount(3)
+            .columnsTemplate(this.columnsTemplateWidth)
+            .columnsGap(6)
+            .rowsGap(6)
+          }
+          else{
+            List({ space: 12 }) {
+              LazyForEach(this.dataSource, (item: Item) => {
+                ListItem() {
+                  ItemCard({
+                    item: item,
+                    onItemClick: () => {this.navigateToDetail(item);},
+                    onDeleteClick: () => {this.deleteItem(item.id);}
+                  })
+                }
+                .borderRadius(12)
+              }, (item: Item) => item.id)
+            }
+            .width('100%')
+            .layoutWeight(1) // 占据剩余空间
+            .cachedCount(3)
+          }
+        }
+        Column(){
+          Button() {
+            Image($r('app.media.addItem'))
+              .width(24)
+              .height(24)
+          }
+          .type(ButtonType.Circle)
+          .backgroundColor($r('app.color.button'))
+          .width(50)
+          .height(50)
+          .shadow({
+            radius: 4,
+            color: '#182431',
+            offsetX: 2,
+            offsetY: 4
           })
+          .stateEffect(true)
+          .zIndex(999)
+          .margin({ bottom: 12 })
+          .hitTestBehavior(HitTestMode.Transparent)
+          .onClick((): void => this.navigateToAdd())
+          if(this.WaterFlow){
+            Button() {
+              Image($r('app.media.switch'))
+                .width(24)
+                .height(24)
+            }
+            .type(ButtonType.Circle)
+            .backgroundColor($r('app.color.button'))
+            .width(50)
+            .height(50)
+            .shadow({
+              radius: 4,
+              color: '#182431',
+              offsetX: 2,
+              offsetY: 4
+            })
+            .stateEffect(true)
+            .zIndex(999)
+            .hitTestBehavior(HitTestMode.Transparent)
+            .onClick(() => {
+              this.cycleColumnMode();
+            })
+          }
         }
-        Button() {
-          Image($r('app.media.addItem'))
-            .width(24)
-            .height(24)
-        }
-        .type(ButtonType.Circle)
-        .backgroundColor($r('app.color.button'))
-        .width(50)
-        .height(50)
-        .shadow({
-          radius: 4,
-          color: '#182431',
-          offsetX: 2,
-          offsetY: 4
-        })
-        .stateEffect(true)
-        .position({ x: 20, y: '90%' })
-        .zIndex(999)
-        .hitTestBehavior(HitTestMode.Transparent)
-        .onClick((): void => this.navigateToAdd())
+        .position({ x: 20, y: '80%' })
+        .alignItems(HorizontalAlign.Start)
       }
       .width('100%')
-      .margin({ bottom: 10 })
 
       Column() {
         Column() {
@@ -132,6 +169,10 @@ export struct MainPage {
             .margin({ left: 15 })
 
           Row() {
+            Image($r('app.media.switch'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(() => {this.WaterFlow=!this.WaterFlow;})
             Image($r('app.media.statistics'))
               .height(24).width(24)
               .margin({ right: 30 })
@@ -157,6 +198,35 @@ export struct MainPage {
       .position({ x: 0, y: 0 })
       .width('100%')
     }
+  }
+
+  private cycleColumnMode() {
+    this.columnMode = (this.columnMode - 1) % 3 + 2;
+    this.updateColumnsTemplate();
+  }
+
+  private updateColumnsTemplate() {
+    let columnText = '';
+    switch (this.columnMode) {
+      case 2:
+        this.columnsTemplateWidth = '1fr 1fr';
+        columnText = '两列';
+        break;
+      case 3:
+        this.columnsTemplateWidth = '1fr 1fr 1fr';
+        columnText = '三列';
+        break;
+      case 4:
+        this.columnsTemplateWidth = '1fr 1fr 1fr 1fr';
+        columnText = '四列';
+        break;
+    }
+
+    prompt.showToast({
+      message: `列数切换为${columnText}`,
+      duration: 500
+    });
+    console.log(`列数切换为: ${columnText}`);
   }
 
   private async loadItems() {

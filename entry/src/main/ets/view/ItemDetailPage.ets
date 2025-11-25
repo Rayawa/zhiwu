@@ -104,19 +104,15 @@ export struct ItemDetailPage {
         }
 
         Row() {
-          Text('我的物品')
+          Text(this.item?.name)
             .fontSize(21)
             .fontWeight(FontWeight.Bold)
             .margin({ left: 15 })
           Row() {
-            Image($r('app.media.statistics'))
+            Image($r('app.media.back'))
               .height(24).width(24)
               .margin({ right: 30 })
-              .onClick(() => router.pushUrl({ url: 'pages/user' }))
-            Image($r('app.media.user'))
-              .height(24).width(24)
-              .margin({ right: 30 })
-              .onClick(() => router.pushUrl({ url: 'pages/user' }))
+              .onClick(() => router.back())
           }
         }
         .width('100%')
