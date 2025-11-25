@@ -41,6 +41,7 @@ export struct MainPage {
   @State isLoading: boolean = true;
   @State columnMode: number = 3;
   @State columnsTemplateWidth: string = '1fr 1fr 1fr';
+  private hasTriggered: boolean = false;
   @State WaterFlow: boolean = true;
 
   async aboutToAppear() {
@@ -72,14 +73,18 @@ export struct MainPage {
           .width('100%')
           .height('100%')
         } else {
-          if(this.WaterFlow){
+          if (this.WaterFlow) {
             WaterFlow() {
               LazyForEach(this.dataSource, (item: Item) => {
                 FlowItem() {
                   ItemCard({
                     item: item,
-                    onItemClick: () => {this.navigateToDetail(item);},
-                    onDeleteClick: () => {this.deleteItem(item.id);}
+                    onItemClick: () => {
+                      this.navigateToDetail(item);
+                    },
+                    onDeleteClick: () => {
+                      this.deleteItem(item.id);
+                    }
                   })
                 }
                 .width('100%')
@@ -90,15 +95,18 @@ export struct MainPage {
             .columnsTemplate(this.columnsTemplateWidth)
             .columnsGap(6)
             .rowsGap(6)
-          }
-          else{
+          } else {
             List({ space: 12 }) {
               LazyForEach(this.dataSource, (item: Item) => {
                 ListItem() {
                   ListCard({
                     item: item,
-                    onItemClick: () => {this.navigateToDetail(item);},
-                    onDeleteClick: () => {this.deleteItem(item.id);}
+                    onItemClick: () => {
+                      this.navigateToDetail(item);
+                    },
+                    onDeleteClick: () => {
+                      this.deleteItem(item.id);
+                    }
                   })
                 }
                 .borderRadius(12)
@@ -109,54 +117,52 @@ export struct MainPage {
             .cachedCount(3)
           }
         }
-        Column(){
-          Button() {
-            Image($r('app.media.addItem'))
-              .width(24)
-              .height(24)
-          }
-          .type(ButtonType.Circle)
-          .backgroundColor($r('app.color.button'))
-          .width(50)
-          .height(50)
-          .shadow({
-            radius: 4,
-            color: '#182431',
-            offsetX: 2,
-            offsetY: 4
-          })
-          .stateEffect(true)
-          .zIndex(999)
-          .margin({ bottom: 12 })
-          .hitTestBehavior(HitTestMode.Transparent)
-          .onClick((): void => this.navigateToAdd())
-          if(this.WaterFlow){
-            Button() {
-              Image($r('app.media.switch'))
-                .width(24)
-                .height(24)
-            }
-            .type(ButtonType.Circle)
-            .backgroundColor($r('app.color.button'))
-            .width(50)
-            .height(50)
-            .shadow({
-              radius: 4,
-              color: '#182431',
-              offsetX: 2,
-              offsetY: 4
-            })
-            .stateEffect(true)
-            .zIndex(999)
-            .hitTestBehavior(HitTestMode.Transparent)
-            .onClick(() => {
-              this.cycleColumnMode();
-            })
-          }
+
+        Button() {
+          Image($r('app.media.addItem'))
+            .width(24)
+            .height(24)
         }
+        .type(ButtonType.Circle)
+        .backgroundColor($r('app.color.button'))
+        .width(50)
+        .height(50)
+        .shadow({
+          radius: 4,
+          color: '#182431',
+          offsetX: 2,
+          offsetY: 4
+        })
+        .stateEffect(true)
+        .zIndex(999)
+        .margin({ bottom: 12 })
+        .hitTestBehavior(HitTestMode.Transparent)
+        .onClick((): void => this.navigateToAdd())
         .position({ x: 20, y: '80%' })
-        .alignItems(HorizontalAlign.Start)
+
       }
+      .gesture(
+        PinchGesture({ fingers: 2 })
+          .onActionStart(() => {
+            this.hasTriggered = false;
+          })
+          .onActionUpdate((event: GestureEvent) => {
+            if (this.hasTriggered) {
+              return;
+            }
+
+            if (event.scale > 1.2) {
+              this.handlePinchIn();
+              this.hasTriggered = true;
+            } else if (event.scale < 0.8) {
+              this.handlePinchOut();
+              this.hasTriggered = true;
+            }
+          })
+          .onActionEnd(() => {
+            this.hasTriggered = false;
+          })
+      )
       .backgroundColor($r('app.color.backcolor'))
       .width('100%')
 
@@ -202,9 +208,28 @@ export struct MainPage {
     }
   }
 
-  private cycleColumnMode() {
-    this.columnMode = (this.columnMode - 1) % 3 + 2;
-    this.updateColumnsTemplate();
+  private handlePinchOut() {
+    if (this.columnMode < 4) {
+      this.columnMode++;
+      this.updateColumnsTemplate();
+    } else {
+      prompt.showToast({
+        message: '不能再缩小了',
+        duration: 500
+      });
+    }
+  }
+
+  private handlePinchIn() {
+    if (this.columnMode > 2) {
+      this.columnMode--;
+      this.updateColumnsTemplate();
+    } else {
+      prompt.showToast({
+        message: '不能再放大了',
+        duration: 500
+      });
+    }
   }
 
   private updateColumnsTemplate() {
@@ -228,7 +253,6 @@ export struct MainPage {
       message: `列数切换为${columnText}`,
       duration: 500
     });
-    console.log(`列数切换为: ${columnText}`);
   }
 
   private async loadItems() {
