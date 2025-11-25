@@ -28,7 +28,6 @@ export struct ItemCard {
     Column() {
       Image(this.item.imageUri)
         .width('100%')
-        .height('200vp')
         .objectFit(ImageFit.Cover)
         .borderRadius(8)
 
@@ -43,7 +42,7 @@ export struct ItemCard {
         Row() {
           Text(`¥${this.item.price}`)
             .fontSize(14)
-            .fontColor('#FF6B6B')
+            .fontColor($r('app.color.border'))
 
           Text(`日均: ¥${this.item.dailyAveragePrice}`)
             .fontSize(12)
@@ -56,7 +55,6 @@ export struct ItemCard {
           Text(this.item.category)
             .fontSize(12)
             .fontColor('#999')
-            .backgroundColor('#F0F0F0')
             .padding({ left: 8, right: 8, top: 2, bottom: 2 })
             .borderRadius(12)
 
@@ -71,7 +69,7 @@ export struct ItemCard {
       .width('100%')
     }
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.background'))
     .borderRadius(12)
     .shadow({ radius: 4, color: '#0000001A', offsetX: 0, offsetY: 2 })
     .padding(8)
@@ -84,6 +82,10 @@ export struct ItemCard {
           this.onDeleteClick();
         })
     )
+  }
+
+  isDarkMode() {
+    throw new Error('Method not implemented.');
   }
 
   private formatDate(date: Date): string {

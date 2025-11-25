@@ -1,10 +1,9 @@
-// 主页面，展示物品列表
+// 主页面，展示物品列表（WaterFlow 版本）
 import { ItemViewModel } from '../viewmodel/ItemViewModel';
 import { Item } from '../model/ItemModel';
 import { ItemCard } from './components/ItemCard';
 import router from '@ohos.router';
 
-// 数据源实现
 class ItemDataSource implements IDataSource {
   private data: Item[] = []
   private listener?: DataChangeListener
@@ -38,8 +37,6 @@ export struct MainPage {
   private dataSource: ItemDataSource = new ItemDataSource();
   @State items: Item[] = [];
   @State isLoading: boolean = true;
-  private readonly NAV_HEIGHT: number = 80;
-  @State scrollY: number = 0;
 
   async aboutToAppear() {
     await this.loadItems();
@@ -49,11 +46,8 @@ export struct MainPage {
   }
 
   build() {
-    Stack(){
+    Stack() {
       Column() {
-        Column()
-          .width('100%')
-          .height(Math.max(this.NAV_HEIGHT - this.scrollY, 0))
         if (this.isLoading) {
           LoadingProgress()
             .width(50)
@@ -66,57 +60,50 @@ export struct MainPage {
               .width(250)
               .height(250)
               .margin({ top:40, bottom: 20 })
-
             Text('还没有添加任何物品')
               .fontSize(20)
               .fontColor('#999')
           }
           .width('100%')
           .height('100%')
-
         } else {
-          Scroll() {
-            Grid() {
-              ForEach(this.items, (item: Item) => {
-                GridItem() {
-                  ItemCard({
-                    item: item,
-                    onItemClick: () => {
-                      this.navigateToDetail(item);
-                    },
-                    onDeleteClick: () => {
-                      this.deleteItem(item.id);
-                    }
-                  })
-                }
-                .width('100%')
-              }, (item: Item) => item.id)
-            }
-            .columnsTemplate('1fr 1fr')
-            .columnsGap(10)
-            .rowsGap(10)
-            .padding({
-              left: 10,
-              right: 10,
-              top: 10,
-              bottom: 80
-            })
+          WaterFlow() {
+            LazyForEach(this.dataSource, (item: Item) => {
+              FlowItem() {
+                ItemCard({
+                  item: item,
+                  onItemClick: () => {this.navigateToDetail(item);},
+                  onDeleteClick: () => {this.deleteItem(item.id);}
+                })
+              }
+              .width('100%')
+              .borderRadius(12)
+            }, (item: Item) => item.id)
           }
-          .onScrollFrameBegin((offset: number, state: ScrollState) => {
-            if (offset < -100 && state === ScrollState.Scroll) {
+          .cachedCount(3)
+          .columnsTemplate('1fr 1fr')
+          .columnsGap(6)
+          .rowsGap(6)
+          .padding({
+            left: 10,
+            right: 10,
+            top: 10,
+            bottom: 80
+          })
+          .onScrollFrameBegin((offset: number) => {
+            if (offset < -100) {
               this.loadItems();
             }
             return { offsetRemain: offset };
           })
         }
-
         Button() {
           Image($r('app.media.addItem'))
             .width(24)
             .height(24)
         }
         .type(ButtonType.Circle)
-        .backgroundColor('#ff66a7ee')
+        .backgroundColor($r('app.color.button'))
         .width(50)
         .height(50)
         .shadow({
@@ -132,23 +119,24 @@ export struct MainPage {
         .onClick((): void => this.navigateToAdd())
       }
       .width('100%')
-      .margin({bottom:10})
+      .margin({ bottom: 10 })
 
       Column() {
         Column() {
           Text('\n').fontSize(14)
         }
-
         Row() {
           Text('我的物品')
             .fontSize(21)
             .fontWeight(FontWeight.Bold)
             .margin({ left: 15 })
+
           Row() {
             Image($r('app.media.statistics'))
               .height(24).width(24)
               .margin({ right: 30 })
-              .onClick(() => router.pushUrl({ url: 'view/statistic' }))
+              .onClick(() => router.pushUrl({ url: 'view/Statistic' }))
+
             Image($r('app.media.user'))
               .height(24).width(24)
               .margin({ right: 30 })
@@ -164,7 +152,6 @@ export struct MainPage {
           .height(0.5)
           .fill("#a6d5d5d5")
           .position({ x: 0, y: 78 })
-
       }
       .backgroundBlurStyle(BlurStyle.Thin)
       .position({ x: 0, y: 0 })
@@ -180,9 +167,7 @@ export struct MainPage {
   }
 
   private navigateToAdd() {
-    router.push({
-      url: 'view/AddItemPage'
-    });
+    router.push({ url: 'view/AddItemPage' });
   }
 
   private navigateToDetail(item: Item) {

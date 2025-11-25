@@ -35,159 +35,172 @@ export struct AddItemPage {
     Stack(){
       Scroll(){
         Column() {
+          // 顶层占位
           Column()
             .width('100%')
             .height(Math.max(this.NAV_HEIGHT - this.scrollY, 0))
-          // 图片选择区域
-          Text('物品图片')
-            .fontSize(14)
-            .fontWeight(FontWeight.Bold)
-            .margin({ bottom: 8 })
-          Stack({ alignContent: Alignment.Bottom }) {
-            Image(this.selectedImage)
-              .objectFit(ImageFit.Contain)
-              .borderRadius($r('sys.float.corner_radius_level5'))
-              .width('100%')
-              .height(200)
+          // 图片选择
+          Column(){
+            Text('物品图片')
+              .fontSize(20)
+              .fontWeight(FontWeight.Bold)
+              .margin({ bottom: 8 })
+            Stack({ alignContent: Alignment.Bottom }) {
+              Image(this.selectedImage)
+                .objectFit(ImageFit.Contain)
+                .borderRadius($r('sys.float.corner_radius_level5'))
+                .height(150)
+                .width('100%')
+                .borderWidth(1)
+                .borderColor($r('app.color.border'))
 
-            Button('选择图片')
-              .buttonStyle(ButtonStyleMode.NORMAL)
-              .backgroundBlurStyle(this.backBlur ? BlurStyle.BACKGROUND_THICK : BlurStyle.NONE,
-                {
-                  colorMode: ThemeColorMode.SYSTEM,
-                  adaptiveColor: AdaptiveColor.DEFAULT,
-                  scale: 1.0
+              Button('选择图片')
+                .buttonStyle(ButtonStyleMode.NORMAL)
+                .backgroundBlurStyle(this.backBlur ? BlurStyle.BACKGROUND_THICK : BlurStyle.NONE,
+                  {
+                    colorMode: ThemeColorMode.SYSTEM,
+                    adaptiveColor: AdaptiveColor.DEFAULT,
+                    scale: 1.0
+                  })
+                .fontColor(this.backBlur ? $r('sys.color.font_on_primary') : $r('app.color.border'))
+                .height(40)
+                .fontWeight(FontWeight.Medium)
+                .fontSize($r('sys.float.Body_L'))
+                .margin({ bottom: 36 })
+                .onClick(() => {
+                  try {
+                    const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+                    photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+                    photoSelectOptions.maxSelectNumber = 1;
+                    const photoPicker = new photoAccessHelper.PhotoViewPicker();
+                    photoPicker.select(photoSelectOptions)
+                      .then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+                        this.imgDatas = photoSelectResult.photoUris;
+                        this.imageUri = this.imgDatas[0];
+                        this.selectedImage = this.imgDatas[0];
+                        if (this.selectedImage.length > 0) {
+                          this.backBlur = true;
+                        }
+                        console.info(`PhotoViewPicker.select successfully, PhotoSelectResult uri: ${photoSelectResult.photoUris[0]}`);
+
+                      })
+                      .catch((err: BusinessError) => {
+                        console.info(`PhotoViewPicker.select failed with err: ${err.code}, ${err.message}`);
+                      });
+                  } catch (error) {
+                    const err: BusinessError = error as BusinessError;
+                    console.error(`PhotoViewPicker failed with err: ${err.code}, ${err.message}`);
+                  }
                 })
-              .fontColor(this.backBlur ? $r('sys.color.font_on_primary') : $r('sys.color.font_emphasize'))
-              .height(40)
-              .fontWeight(FontWeight.Medium)
-              .fontSize($r('sys.float.Body_L'))
-              .margin({ bottom: 36 })
-              .onClick(() => {
-                try {
-                  const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
-                  photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
-                  photoSelectOptions.maxSelectNumber = 1;
-                  const photoPicker = new photoAccessHelper.PhotoViewPicker();
-                  photoPicker.select(photoSelectOptions)
-                    .then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
-                      this.imgDatas = photoSelectResult.photoUris;
-                      this.imageUri = this.imgDatas[0];
-                      this.selectedImage = this.imgDatas[0];
-                      if (this.selectedImage.length > 0) {
-                        this.backBlur = true;
-                      }
-                      console.info(`PhotoViewPicker.select successfully, PhotoSelectResult uri: ${photoSelectResult.photoUris[0]}`);
+            }
+          }
+          .backgroundColor($r('app.color.background'))
+          .borderRadius($r('sys.float.corner_radius_level5'))
+          .padding(12)
+          .margin({bottom:20})
 
-                    })
-                    .catch((err: BusinessError) => {
-                      console.info(`PhotoViewPicker.select failed with err: ${err.code}, ${err.message}`);
-                    });
-                } catch (error) {
-                  const err: BusinessError = error as BusinessError;
-                  console.error(`PhotoViewPicker failed with err: ${err.code}, ${err.message}`);
+          // 物品名称
+          Column() {
+            Text('物品名称')
+              .fontSize(20)
+              .fontWeight(FontWeight.Bold)
+              .margin({ bottom: 8 })
+
+            TextInput({ placeholder: '请输入物品名称' })
+              .height('44vp')
+              .borderRadius(8)
+              .padding({ left: 12, right: 12 })
+              .onChange((value: string) => {
+                this.name = value;
+              })
+          }
+          .backgroundColor($r('app.color.background'))
+          .borderRadius($r('sys.float.corner_radius_level5'))
+          .padding(12)
+          .margin({bottom:20})
+
+          // 物品价格
+          Column() {
+            Text('物品价格')
+              .fontSize(20)
+              .fontWeight(FontWeight.Bold)
+              .margin({bottom:8})
+
+            TextInput({ placeholder: '请输入物品价格' })
+              .height('44vp')
+              .borderRadius(8)
+              .padding({ left: 12, right: 12 })
+              .type(InputType.Number)
+              .onChange((value: string) => {
+                this.price = value;
+              })
+          }
+          .backgroundColor($r('app.color.background'))
+          .borderRadius($r('sys.float.corner_radius_level5'))
+          .padding(12)
+          .margin({bottom:20})
+
+          // 获取时间
+          Column() {
+            Text('获取时间')
+              .fontSize(20)
+              .fontWeight(FontWeight.Bold)
+              .margin({ bottom: 8 })
+
+            DatePicker({
+              start: new Date('1975-01-01'),
+              end: new Date(),
+              selected: this.selectedDate
+            })
+              .width('100%')
+              .borderRadius(8)
+              .onChange((value: DatePickerResult) => {
+                if (value.year !== undefined && value.month !== undefined && value.day !== undefined) {
+                  this.selectedDate = new Date(value.year, value.month - 1, value.day);
                 }
               })
           }
-          .width('95%')
+          .backgroundColor($r('app.color.background'))
+          .borderRadius($r('sys.float.corner_radius_level5'))
+          .padding(12)
+          .margin({bottom:20})
 
-          // 表单区域
+          // 物品分类
           Column() {
-            // 物品名称
-            Column() {
-              Text('物品名称')
-                .fontSize(14)
-                .fontWeight(FontWeight.Bold)
-                .margin({ bottom: 8 })
+            Text('物品分类')
+              .fontSize(20)
+              .fontWeight(FontWeight.Bold)
+              .margin({ bottom: 8 })
 
-              TextInput({ placeholder: '请输入物品名称' })
-                .width('100%')
-                .height('44vp')
-                .backgroundColor('#F5F5F5')
-                .borderRadius(8)
-                .padding({ left: 12, right: 12 })
-                .onChange((value: string) => {
-                  this.name = value;
-                })
-            }
-            .margin({ bottom: 20, top: 20 })
-
-            // 物品价格
-            Column() {
-              Text('物品价格')
-                .fontSize(14)
-                .fontWeight(FontWeight.Bold)
-                .margin({ bottom: 8 })
-
-              TextInput({ placeholder: '请输入物品价格' })
-                .width('100%')
-                .height('44vp')
-                .backgroundColor('#F5F5F5')
-                .borderRadius(8)
-                .padding({ left: 12, right: 12 })
-                .type(InputType.Number)
-                .onChange((value: string) => {
-                  this.price = value;
-                })
-            }
-            .margin({ bottom: 20, top: 20 })
-
-            // 获取时间
-            Column() {
-              Text('获取时间')
-                .fontSize(14)
-                .fontWeight(FontWeight.Bold)
-                .margin({ bottom: 8 })
-
-              DatePicker({
-                start: new Date('2000-01-01'),
-                end: new Date(),
-                selected: this.selectedDate
-              })
-                .width('100%')
-                .onChange((value: DatePickerResult) => {
-                  if (value.year !== undefined && value.month !== undefined && value.day !== undefined) {
-                    this.selectedDate = new Date(value.year, value.month - 1, value.day);
-                  }
-                })
-            }
-            .margin({ bottom: 20, top: 20 })
-
-            // 物品分类 - 使用正确的 SelectOption 类型
-            Column() {
-              Text('物品分类')
-                .fontSize(14)
-                .fontWeight(FontWeight.Bold)
-                .margin({ bottom: 8 })
-
-              Select(this.getCategoryOptions())
-                .width('100%')
-                .value(this.selectedCategory)
-                .onSelect((index: number) => {
-                  if (index >= 0 && index < this.categories.length) {
-                    this.selectedCategory = this.categories[index];
-                  }
-                })
-            }
-            .margin({ bottom: 20, top: 20 })
-
-            // 保存按钮
-            Button(this.isSubmitting ? '保存中...' : '保存')
+            Select(this.getCategoryOptions())
               .width('100%')
-              .height('48vp')
-              .backgroundColor('#007AFF')
-              .fontColor(Color.White)
-              .fontSize(16)
-              .margin({ top: 40, bottom: 40 })
-              .onClick(() => {
-                this.saveItem();
+              .value(this.selectedCategory)
+              .onSelect((index: number) => {
+                if (index >= 0 && index < this.categories.length) {
+                  this.selectedCategory = this.categories[index];
+                }
               })
-              .enabled(!this.isSubmitting)
           }
-          .padding({ left: 20, right: 20 })
-          .margin({bottom:10})
-          .width('95%')
+          .backgroundColor($r('app.color.background'))
+          .borderRadius($r('sys.float.corner_radius_level5'))
+          .padding(12)
+          .margin({bottom:20})
+
+          // 保存按钮
+          Button(this.isSubmitting ? '保存中...' : '保存')
+            .width('100%')
+            .height('48vp')
+            .backgroundColor($r('app.color.border'))
+            .fontColor(Color.White)
+            .fontSize(16)
+            .margin({bottom:20})
+            .onClick(() => {
+              this.saveItem();
+            })
+            .enabled(!this.isSubmitting)
         }
+        .padding({ left: 20, right: 20 })
+        .margin({bottom:20})
       }
       Column() {
         Column() {
