@@ -137,10 +137,14 @@ export struct ItemDetailPage {
         .margin({ top: 10, bottom: 20 })
       }
       .width('100%')
+      .layoutWeight(1) // 关键修复：让Scroll占据剩余空间
+      .align(Alignment.Top) // 内容从顶部开始
     }
     .height('100%')
     .width('100%')
     .backgroundColor($r('app.color.backcolor'))
+    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Start)
   }
 
   private async loadItemDetail(itemId: string) {
