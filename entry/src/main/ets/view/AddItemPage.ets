@@ -1,4 +1,3 @@
-// 添加物品页面
 import { ItemViewModel, ItemInput } from '../viewmodel/ItemViewModel';
 import { ItemCategory } from '../model/ItemModel';
 import router from '@ohos.router';
