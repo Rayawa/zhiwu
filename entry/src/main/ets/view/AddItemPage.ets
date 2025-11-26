@@ -234,13 +234,16 @@ export struct AddItemPage {
         .margin({ top: 10, bottom: 20 })
       }
       .width('100%')
+      .layoutWeight(1)
+      .align(Alignment.Top)
     }
     .height('100%')
     .width('100%')
     .backgroundColor($r('app.color.backcolor'))
+    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Start)
   }
 
-  // 保存物品
   private async saveItem() {
     // 表单验证
     if (!this.name.trim()) {

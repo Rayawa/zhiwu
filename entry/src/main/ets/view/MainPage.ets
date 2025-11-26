@@ -197,13 +197,15 @@ export struct MainPage {
         .width('95%')
         .margin({ top: 10, bottom: 20 })
       }
-      .height('100%')
       .width('100%')
-      .backgroundColor($r('app.color.backcolor'))
+      .layoutWeight(1)
+      .align(Alignment.Top)
     }
     .height('100%')
     .width('100%')
     .backgroundColor($r('app.color.backcolor'))
+    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Start)
   }
 
   private handlePinchOut() {
