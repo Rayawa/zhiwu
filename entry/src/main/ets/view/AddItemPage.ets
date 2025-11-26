@@ -10,7 +10,6 @@ import { prompt } from '@kit.ArkUI';
 export struct AddItemPage {
   private itemViewModel: ItemViewModel = new ItemViewModel();
   private categories: string[] = Object.values(ItemCategory);
-
   @State name: string = '';
   @State price: string = '';
   @State selectedDate: Date = new Date();
@@ -20,17 +19,6 @@ export struct AddItemPage {
   @State selectedImage: ResourceStr = '';
   @State backBlur: boolean = false;
   @State isSubmitting: boolean = false;
-  private readonly NAV_HEIGHT: number = 85;
-  @State scrollY: number = 0;
-
-  // 将分类转换为 SelectOption 数组
-  private getCategoryOptions(): SelectOption[] {
-    const options: SelectOption[] = [];
-    for (let i = 0; i < this.categories.length; i++) {
-      options.push({ value: this.categories[i] });
-    }
-    return options;
-  }
 
   build() {
     Column(){
@@ -51,9 +39,7 @@ export struct AddItemPage {
             Image($r('app.media.add'))
               .height(24).width(24)
               .margin({ right: 30 })
-              .onClick(() => {
-                this.saveItem();
-              })
+              .onClick(() => {this.saveItem();})
           }
         }
         .width('100%')
@@ -62,7 +48,7 @@ export struct AddItemPage {
 
         Rect()
           .width('100%')
-          .height(0.5)
+          .height(0.8)
           .fill("#a6d5d5d5")
       }
       .width('100%')
@@ -79,6 +65,7 @@ export struct AddItemPage {
                 .objectFit(ImageFit.Contain)
                 .borderRadius($r('sys.float.corner_radius_level5'))
                 .height(150)
+                .padding(2)
                 .width('100%')
                 .borderWidth(1)
                 .borderColor($r('app.color.border'))
@@ -128,13 +115,12 @@ export struct AddItemPage {
           .padding(12)
           .margin({bottom:20})
 
-          // 物品名称
+
           Column() {
             Text('物品名称')
               .fontSize(20)
               .fontWeight(FontWeight.Bold)
               .margin({ bottom: 8 })
-
             TextInput({ placeholder: '请输入物品名称' })
               .height('44vp')
               .borderRadius(8)
@@ -154,7 +140,6 @@ export struct AddItemPage {
               .fontSize(20)
               .fontWeight(FontWeight.Bold)
               .margin({bottom:8})
-
             TextInput({ placeholder: '请输入物品价格' })
               .height('44vp')
               .borderRadius(8)
@@ -175,7 +160,6 @@ export struct AddItemPage {
               .fontSize(20)
               .fontWeight(FontWeight.Bold)
               .margin({ bottom: 8 })
-
             DatePicker({
               start: new Date('1975-01-01'),
               end: new Date(),
@@ -200,7 +184,6 @@ export struct AddItemPage {
               .fontSize(20)
               .fontWeight(FontWeight.Bold)
               .margin({ bottom: 8 })
-
             Select(this.getCategoryOptions())
               .width('100%')
               .value(this.selectedCategory)
@@ -242,6 +225,14 @@ export struct AddItemPage {
     .backgroundColor($r('app.color.backcolor'))
     .alignItems(HorizontalAlign.Center)
     .justifyContent(FlexAlign.Start)
+  }
+
+  private getCategoryOptions(): SelectOption[] {
+    const options: SelectOption[] = [];
+    for (let i = 0; i < this.categories.length; i++) {
+      options.push({ value: this.categories[i] });
+    }
+    return options;
   }
 
   private async saveItem() {
