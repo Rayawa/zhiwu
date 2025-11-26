@@ -1,4 +1,3 @@
-// 物品详情页面
 import { ItemViewModel } from '../viewmodel/ItemViewModel';
 import { Item } from '../model/ItemModel';
 import router from '@ohos.router';
@@ -44,7 +43,7 @@ export struct ItemDetailPage {
 
         Rect()
           .width('100%')
-          .height(0.5)
+          .height(0.8)
           .fill("#a6d5d5d5")
       }
       .width('100%')

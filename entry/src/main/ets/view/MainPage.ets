@@ -1,4 +1,3 @@
-// 主页面，展示物品列表（WaterFlow 版本）
 import { ItemViewModel } from '../viewmodel/ItemViewModel';
 import { Item } from '../model/ItemModel';
 import { ItemCard } from './components/ItemCard';
@@ -44,7 +43,6 @@ export struct MainPage {
   private hasTriggered: boolean = false;
   @State WaterFlow: boolean = true;
 
-
   async aboutToAppear() {
     await this.loadItems();
   }
@@ -64,10 +62,15 @@ export struct MainPage {
             .fontWeight(FontWeight.Bold)
             .margin({ left: 15 })
           Row() {
-            Image($r('app.media.back'))
+            Image($r('app.media.statistics'))
               .height(24).width(24)
               .margin({ right: 30 })
-              .onClick(() => router.back())
+              .onClick(() => router.pushUrl({ url: 'view/Statistic' }))
+
+            Image($r('app.media.user'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(() => router.pushUrl({ url: 'view/user' }))
           }
         }
         .width('100%')
@@ -76,7 +79,7 @@ export struct MainPage {
 
         Rect()
           .width('100%')
-          .height(0.5)
+          .height(0.8)
           .fill("#a6d5d5d5")
       }
       .width('100%')
@@ -185,12 +188,7 @@ export struct MainPage {
       .backgroundColor($r('app.color.button'))
       .width(50)
       .height(50)
-      .shadow({
-        radius: 4,
-        color: '#182431',
-        offsetX: 2,
-        offsetY: 4
-      })
+      .shadow({ radius: 4, color: '#182431', offsetX: 2, offsetY: 4 })
       .stateEffect(true)
       .zIndex(999)
       .margin({ bottom: 12 })
