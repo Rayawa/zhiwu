@@ -170,6 +170,7 @@ export struct MainPage {
             })
             .onActionEnd(() => {
               this.hasTriggered = false;
+              this.RefreshPage();
             })
         )
         .backgroundColor($r('app.color.backcolor'))
@@ -202,6 +203,10 @@ export struct MainPage {
     .backgroundColor($r('app.color.backcolor'))
     .alignItems(HorizontalAlign.Center)
     .justifyContent(FlexAlign.Start)
+  }
+
+  private RefreshPage(){
+
   }
 
   private handlePinchOut() {
