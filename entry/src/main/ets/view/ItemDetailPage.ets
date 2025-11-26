@@ -23,11 +23,11 @@ export struct ItemDetailPage {
   }
 
   build() {
-    Stack(){
+    Column(){
+      Column()
+        .width('100%')
+        .height(Math.max(this.NAV_HEIGHT - this.scrollY, 0))
       Column() {
-        Column()
-          .width('100%')
-          .height(Math.max(this.NAV_HEIGHT - this.scrollY, 0))
         if (this.isLoading) {
           Text('加载中...')
             .fontSize(16)
@@ -37,57 +37,63 @@ export struct ItemDetailPage {
             .fontSize(16)
             .margin({ top: 100 })
         } else {
-          // 物品图片
           Image(this.item.imageUri)
             .width('95%')
-            .height(300)
+            .borderRadius(8)
             .objectFit(ImageFit.Cover)
+            .margin({ bottom: 12 })
 
-          // 物品信息
           Column() {
             Text(this.item.name)
               .fontSize(24)
               .fontWeight(FontWeight.Bold)
-              .margin({ top: 20 })
+              .margin({ bottom: 12 })
 
             Row() {
               Text(`价格: ¥${this.item.price}`)
                 .fontSize(18)
                 .fontColor('#FF6B6B')
-
               Text(`日均: ¥${this.item.dailyAveragePrice}`)
                 .fontSize(16)
                 .fontColor('#666')
-                .margin({ left: 10 })
+                .margin({left:10})
             }
-            .margin({ top: 16 })
+            .margin({ bottom: 12 })
 
             Row() {
+              Image($r('app.media.calendar'))
+                .width(16)
+                .height(16)
+                .margin({ right: 2 })
+              Text(`${this.calculateDays(this.item.acquireDate)}天`)
+                .fontSize(16)
+                .fontColor($r('app.color.border'))
+                .fontWeight(FontWeight.Medium)
+              Text(`自${this.formatDate(this.item.acquireDate)}`)
+                .fontSize(16)
+                .fontColor('#999')
+                .margin({left:10})
+            }
+            .margin({ bottom: 12 })
+
               Text(`分类: ${this.item.category}`)
                 .fontSize(16)
                 .fontColor('#666')
 
-              Text(`获取时间: ${this.formatDate(this.item.acquireDate)}`)
-                .fontSize(16)
-                .fontColor('#666')
-                .margin({ left: 10 })
-            }
-            .margin({ top: 12 })
 
-            // 操作按钮
             Row() {
               Button('编辑')
                 .width('48%')
                 .height(44)
-                .backgroundColor('#007AFF')
-                .margin({ top: 40 })
+                .backgroundColor($r('app.color.border'))
+                .margin({ top: 20 })
                 .onClick((): void => this.editItem())
 
               Button('删除')
                 .width('48%')
                 .height(44)
-                .backgroundColor('#FF4D4F')
-                .margin({ top: 40, left: '4%' })
+                .backgroundColor($r('app.color.price'))
+                .margin({ top: 20, left: '4%' })
                 .onClick((): void => this.showDeleteDialog())
             }
           }
@@ -96,6 +102,11 @@ export struct ItemDetailPage {
         }
 
       }
+      .backgroundColor($r('app.color.background'))
+      .borderRadius(12)
+      .borderWidth(1)
+      .padding(12)
+      .borderColor($r('app.color.border'))
       .width('95%')
 
       Column() {
@@ -145,8 +156,28 @@ export struct ItemDetailPage {
     }
   }
 
+  private calculateDays(acquireDate: Date): number {
+    try {
+      const acquire = acquireDate.getTime();
+      const now = new Date().getTime();
+      const diffTime = Math.abs(now - acquire);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    } catch (e) {
+      console.error('日期计算错误:', e);
+      return 0;
+    }
+  }
   private formatDate(date: Date): string {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    try {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } catch (e) {
+      console.error('日期格式化错误:', e);
+      return '未知日期';
+    }
   }
 
   private editItem() {

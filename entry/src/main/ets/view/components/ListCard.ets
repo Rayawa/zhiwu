@@ -73,7 +73,7 @@ export struct ListCard {
       .layoutWeight(1)
     }
     .width('100%')
-    .justifyContent(FlexAlign.SpaceBetween) // 使用SpaceBetween让三部分均匀分布
+    .justifyContent(FlexAlign.SpaceBetween)
     .alignItems(VerticalAlign.Center)
     .backgroundColor($r('app.color.background'))
     .borderRadius(12)
