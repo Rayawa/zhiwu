@@ -49,7 +49,6 @@ export struct ItemDetailPage {
       }
       .width('100%')
       .backgroundColor($r('app.color.backcolor'))
-
       Scroll() {
         Column() {
           if (this.isLoading) {
@@ -137,8 +136,8 @@ export struct ItemDetailPage {
         .margin({ top: 10, bottom: 20 })
       }
       .width('100%')
-      .layoutWeight(1) // 关键修复：让Scroll占据剩余空间
-      .align(Alignment.Top) // 内容从顶部开始
+      .layoutWeight(1)
+      .align(Alignment.Top)
     }
     .height('100%')
     .width('100%')

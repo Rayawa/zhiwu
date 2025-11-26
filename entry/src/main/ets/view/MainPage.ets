@@ -81,7 +81,6 @@ export struct MainPage {
       }
       .width('100%')
       .backgroundColor($r('app.color.backcolor'))
-
       Scroll() {
         Column() {
           if (this.isLoading) {
@@ -147,29 +146,6 @@ export struct MainPage {
               .cachedCount(3)
             }
           }
-
-          Button() {
-            Image($r('app.media.addItem'))
-              .width(24)
-              .height(24)
-          }
-          .type(ButtonType.Circle)
-          .backgroundColor($r('app.color.button'))
-          .width(50)
-          .height(50)
-          .shadow({
-            radius: 4,
-            color: '#182431',
-            offsetX: 2,
-            offsetY: 4
-          })
-          .stateEffect(true)
-          .zIndex(999)
-          .margin({ bottom: 12 })
-          .hitTestBehavior(HitTestMode.Transparent)
-          .onClick((): void => this.navigateToAdd())
-          .position({ x: 20, y: '90%' })
-
         }
         .gesture(
           PinchGesture({ fingers: 2 })
@@ -200,6 +176,28 @@ export struct MainPage {
       .width('100%')
       .layoutWeight(1)
       .align(Alignment.Top)
+      Button() {
+        Image($r('app.media.addItem'))
+          .width(24)
+          .height(24)
+      }
+      .type(ButtonType.Circle)
+      .backgroundColor($r('app.color.button'))
+      .width(50)
+      .height(50)
+      .shadow({
+        radius: 4,
+        color: '#182431',
+        offsetX: 2,
+        offsetY: 4
+      })
+      .stateEffect(true)
+      .zIndex(999)
+      .margin({ bottom: 12 })
+      .hitTestBehavior(HitTestMode.Transparent)
+      .onClick((): void => this.navigateToAdd())
+      .position({ x: 20, y: '90%' })
+
     }
     .height('100%')
     .width('100%')
