@@ -33,14 +33,42 @@ export struct AddItemPage {
   }
 
   build() {
-    Stack(){
+    Column(){
+      Column() {
+        Column() {
+          Text('\n').fontSize(14)
+        }
+        Row() {
+          Text('添加物品')
+            .fontSize(21)
+            .fontWeight(FontWeight.Bold)
+            .margin({ left: 15 })
+          Row() {
+            Image($r('app.media.back'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(() => router.back())
+            Image($r('app.media.add'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(() => {
+                this.saveItem();
+              })
+          }
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
+        .height(45)
+
+        Rect()
+          .width('100%')
+          .height(0.5)
+          .fill("#a6d5d5d5")
+      }
+      .width('100%')
+      .backgroundColor($r('app.color.backcolor'))
       Scroll(){
         Column() {
-          // 顶层占位
-          Column()
-            .width('100%')
-            .height(Math.max(this.NAV_HEIGHT - this.scrollY, 0))
-          // 图片选择
           Column(){
             Text('物品图片')
               .fontSize(20)
@@ -95,7 +123,7 @@ export struct AddItemPage {
                 })
             }
           }
-          .backgroundColor($r('app.color.background'))
+          .backgroundColor($r('app.color.backcolor'))
           .borderRadius($r('sys.float.corner_radius_level5'))
           .padding(12)
           .margin({bottom:20})
@@ -115,7 +143,7 @@ export struct AddItemPage {
                 this.name = value;
               })
           }
-          .backgroundColor($r('app.color.background'))
+          .backgroundColor($r('app.color.backcolor'))
           .borderRadius($r('sys.float.corner_radius_level5'))
           .padding(12)
           .margin({bottom:20})
@@ -136,7 +164,7 @@ export struct AddItemPage {
                 this.price = value;
               })
           }
-          .backgroundColor($r('app.color.background'))
+          .backgroundColor($r('app.color.backcolor'))
           .borderRadius($r('sys.float.corner_radius_level5'))
           .padding(12)
           .margin({bottom:20})
@@ -161,7 +189,7 @@ export struct AddItemPage {
                 }
               })
           }
-          .backgroundColor($r('app.color.background'))
+          .backgroundColor($r('app.color.backcolor'))
           .borderRadius($r('sys.float.corner_radius_level5'))
           .padding(12)
           .margin({bottom:20})
@@ -182,7 +210,7 @@ export struct AddItemPage {
                 }
               })
           }
-          .backgroundColor($r('app.color.background'))
+          .backgroundColor($r('app.color.backcolor'))
           .borderRadius($r('sys.float.corner_radius_level5'))
           .padding(12)
           .margin({bottom:20})
@@ -200,46 +228,16 @@ export struct AddItemPage {
             })
             .enabled(!this.isSubmitting)
         }
-        .padding({ left: 20, right: 20 })
-        .margin({bottom:20})
+        .backgroundColor($r('app.color.backcolor'))
+        .borderRadius(12)
+        .width('95%')
+        .margin({ top: 10, bottom: 20 })
       }
-      Column() {
-        Column() {
-          Text('\n').fontSize(14)
-        }
-        Row() {
-          Text('添加物品')
-            .fontSize(21)
-            .fontWeight(FontWeight.Bold)
-            .margin({ left: 15 })
-          Row() {
-            Image($r('app.media.back'))
-              .height(24).width(24)
-              .margin({ right: 30 })
-              .onClick(() => router.back())
-            Image($r('app.media.add'))
-              .height(24).width(24)
-              .margin({ right: 30 })
-              .onClick(() => {
-                this.saveItem();
-              })
-          }
-        }
-        .width('100%')
-        .justifyContent(FlexAlign.SpaceBetween)
-        .height(45)
-
-        Rect()
-          .width('100%')
-          .height(0.5)
-          .fill("#a6d5d5d5")
-          .position({ x: 0, y: 78 })
-
-      }
-      .backgroundBlurStyle(BlurStyle.Thin)
-      .position({ x: 0, y: 0 })
       .width('100%')
     }
+    .height('100%')
+    .width('100%')
+    .backgroundColor($r('app.color.backcolor'))
   }
 
   // 保存物品

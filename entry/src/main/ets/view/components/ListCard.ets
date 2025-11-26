@@ -6,6 +6,7 @@ export struct ListCard {
   private onItemClick: () => void = () => {};
   private onDeleteClick: () => void = () => {};
 
+
   constructor(params: {
     item: Item;
     onItemClick?: () => void;
@@ -93,6 +94,8 @@ export struct ListCard {
     .gesture(
       LongPressGesture({ repeat: false }).onAction(() => {this.onDeleteClick();})
     )
+
+
   }
 
   isDarkMode() {

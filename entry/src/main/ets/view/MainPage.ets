@@ -44,6 +44,7 @@ export struct MainPage {
   private hasTriggered: boolean = false;
   @State WaterFlow: boolean = true;
 
+
   async aboutToAppear() {
     await this.loadItems();
   }
@@ -52,120 +53,7 @@ export struct MainPage {
   }
 
   build() {
-    Stack() {
-      Column() {
-        if (this.isLoading) {
-          LoadingProgress()
-            .width(50)
-            .height(50)
-            .color(Color.Blue)
-            .margin({ top: 100 })
-        } else if (this.items.length === 0) {
-          Column() {
-            Image($r('app.media.noItem'))
-              .width(250)
-              .height(250)
-              .margin({ top:40, bottom: 20 })
-            Text('还没有添加任何物品')
-              .fontSize(20)
-              .fontColor('#999')
-          }
-          .width('100%')
-          .height('100%')
-        } else {
-          if (this.WaterFlow) {
-            WaterFlow() {
-              LazyForEach(this.dataSource, (item: Item) => {
-                FlowItem() {
-                  ItemCard({
-                    item: item,
-                    onItemClick: () => {
-                      this.navigateToDetail(item);
-                    },
-                    onDeleteClick: () => {
-                      this.deleteItem(item.id);
-                    }
-                  })
-                }
-                .width('100%')
-                .borderRadius(12)
-              }, (item: Item) => item.id)
-            }
-            .cachedCount(3)
-            .columnsTemplate(this.columnsTemplateWidth)
-            .columnsGap(6)
-            .rowsGap(6)
-          } else {
-            List({ space: 12 }) {
-              LazyForEach(this.dataSource, (item: Item) => {
-                ListItem() {
-                  ListCard({
-                    item: item,
-                    onItemClick: () => {
-                      this.navigateToDetail(item);
-                    },
-                    onDeleteClick: () => {
-                      this.deleteItem(item.id);
-                    }
-                  })
-                }
-                .borderRadius(12)
-              }, (item: Item) => item.id)
-            }
-            .width('100%')
-            .layoutWeight(1) // 占据剩余空间
-            .cachedCount(3)
-          }
-        }
-
-        Button() {
-          Image($r('app.media.addItem'))
-            .width(24)
-            .height(24)
-        }
-        .type(ButtonType.Circle)
-        .backgroundColor($r('app.color.button'))
-        .width(50)
-        .height(50)
-        .shadow({
-          radius: 4,
-          color: '#182431',
-          offsetX: 2,
-          offsetY: 4
-        })
-        .stateEffect(true)
-        .zIndex(999)
-        .margin({ bottom: 12 })
-        .hitTestBehavior(HitTestMode.Transparent)
-        .onClick((): void => this.navigateToAdd())
-        .position({ x: 20, y: '90%' })
-
-      }
-      .gesture(
-        PinchGesture({ fingers: 2 })
-          .onActionStart(() => {
-            this.hasTriggered = false;
-          })
-          .onActionUpdate((event: GestureEvent) => {
-            if (this.hasTriggered) {
-              return;
-            }
-
-            if (event.scale > 1.2) {
-              this.handlePinchIn();
-              this.hasTriggered = true;
-            } else if (event.scale < 0.8) {
-              this.handlePinchOut();
-              this.hasTriggered = true;
-            }
-          })
-          .onActionEnd(() => {
-            this.hasTriggered = false;
-          })
-      )
-      .backgroundColor($r('app.color.backcolor'))
-      .width('100%')
-
+    Column() {
       Column() {
         Column() {
           Text('\n').fontSize(14)
@@ -175,21 +63,11 @@ export struct MainPage {
             .fontSize(21)
             .fontWeight(FontWeight.Bold)
             .margin({ left: 15 })
-
           Row() {
-            Image($r('app.media.switch'))
+            Image($r('app.media.back'))
               .height(24).width(24)
               .margin({ right: 30 })
-              .onClick(() => {this.WaterFlow=!this.WaterFlow;})
-            Image($r('app.media.statistics'))
-              .height(24).width(24)
-              .margin({ right: 30 })
-              .onClick(() => router.pushUrl({ url: 'view/Statistic' }))
-
-            Image($r('app.media.user'))
-              .height(24).width(24)
-              .margin({ right: 30 })
-              .onClick(() => router.pushUrl({ url: 'view/user' }))
+              .onClick(() => router.back())
           }
         }
         .width('100%')
@@ -200,12 +78,132 @@ export struct MainPage {
           .width('100%')
           .height(0.5)
           .fill("#a6d5d5d5")
-          .position({ x: 0, y: 78 })
       }
-      .backgroundBlurStyle(BlurStyle.Thin)
-      .position({ x: 0, y: 0 })
       .width('100%')
+      .backgroundColor($r('app.color.backcolor'))
+
+      Scroll() {
+        Column() {
+          if (this.isLoading) {
+            LoadingProgress()
+              .width(50)
+              .height(50)
+              .color(Color.Blue)
+              .margin({ top: 100 })
+          } else if (this.items.length === 0) {
+            Column() {
+              Image($r('app.media.noItem'))
+                .width(250)
+                .height(250)
+                .margin({ top:40, bottom: 20 })
+              Text('还没有添加任何物品')
+                .fontSize(20)
+                .fontColor('#999')
+            }
+            .width('100%')
+            .height('100%')
+          } else {
+            if (this.WaterFlow) {
+              WaterFlow() {
+                LazyForEach(this.dataSource, (item: Item) => {
+                  FlowItem() {
+                    ItemCard({
+                      item: item,
+                      onItemClick: () => {
+                        this.navigateToDetail(item);
+                      },
+                      onDeleteClick: () => {
+                        this.deleteItem(item.id);
+                      }
+                    })
+                  }
+                  .width('100%')
+                  .borderRadius(12)
+                }, (item: Item) => item.id)
+              }
+              .cachedCount(3)
+              .columnsTemplate(this.columnsTemplateWidth)
+              .columnsGap(6)
+              .rowsGap(6)
+            } else {
+              List({ space: 12 }) {
+                LazyForEach(this.dataSource, (item: Item) => {
+                  ListItem() {
+                    ListCard({
+                      item: item,
+                      onItemClick: () => {
+                        this.navigateToDetail(item);
+                      },
+                      onDeleteClick: () => {
+                        this.deleteItem(item.id);
+                      }
+                    })
+                  }
+                  .borderRadius(12)
+                }, (item: Item) => item.id)
+              }
+              .width('100%')
+              .layoutWeight(1) // 占据剩余空间
+              .cachedCount(3)
+            }
+          }
+
+          Button() {
+            Image($r('app.media.addItem'))
+              .width(24)
+              .height(24)
+          }
+          .type(ButtonType.Circle)
+          .backgroundColor($r('app.color.button'))
+          .width(50)
+          .height(50)
+          .shadow({
+            radius: 4,
+            color: '#182431',
+            offsetX: 2,
+            offsetY: 4
+          })
+          .stateEffect(true)
+          .zIndex(999)
+          .margin({ bottom: 12 })
+          .hitTestBehavior(HitTestMode.Transparent)
+          .onClick((): void => this.navigateToAdd())
+          .position({ x: 20, y: '90%' })
+
+        }
+        .gesture(
+          PinchGesture({ fingers: 2 })
+            .onActionStart(() => {
+              this.hasTriggered = false;
+            })
+            .onActionUpdate((event: GestureEvent) => {
+              if (this.hasTriggered) {
+                return;
+              }
+
+              if (event.scale > 1.2) {
+                this.handlePinchIn();
+                this.hasTriggered = true;
+              } else if (event.scale < 0.8) {
+                this.handlePinchOut();
+                this.hasTriggered = true;
+              }
+            })
+            .onActionEnd(() => {
+              this.hasTriggered = false;
+            })
+        )
+        .backgroundColor($r('app.color.backcolor'))
+        .width('95%')
+        .margin({ top: 10, bottom: 20 })
+      }
+      .height('100%')
+      .width('100%')
+      .backgroundColor($r('app.color.backcolor'))
     }
+    .height('100%')
+    .width('100%')
+    .backgroundColor($r('app.color.backcolor'))
   }
 
   private handlePinchOut() {
