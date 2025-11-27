@@ -4,51 +4,37 @@ import { router } from "@kit.ArkUI"
 @Component
 struct User {
   build() {
-    Stack({ alignContent: Alignment.Top }) {
-      // 背景渐变
+    Column() {
       Column() {
-        // 上半部分渐变背景
-        Column()
-          .width('100%')
-          .height('100%')
-          .linearGradient({
-            angle: 180,
-            colors: [['#667eea', 0], ['#764ba2', 1]]
-          })
-
-      }
-      .width('100%')
-      .height('100%')
-
-      // 主内容区域
-      Column() {
-        // 顶部标题栏
         Column() {
+          Column() {
+            Text('\n').fontSize(14)
+          }
           Row() {
-            Image($r('app.media.back'))
-              .height(24)
-              .width(24)
-              .fillColor(Color.White)
-              .onClick(() => router.back())
-
-            Text('个人中心')
-              .fontSize(24)
+            Text('我的')
+              .fontSize(21)
               .fontWeight(FontWeight.Bold)
-              .fontColor(Color.White)
-              .margin({ left: 12 })
-
-            Blank()
+              .margin({ left: 15 })
+            Row() {
+              Image($r('app.media.back'))
+                .height(24).width(24)
+                .margin({ right: 30 })
+                .onClick(() => router.back())
+            }
           }
           .width('100%')
-          .padding({ left: 16, right: 16 })
+          .justifyContent(FlexAlign.SpaceBetween)
+          .height(45)
+
+          Rect()
+            .width('100%')
+            .height(0.8)
+            .fill("#a6d5d5d5")
         }
         .width('100%')
-        .height(80)
-        .justifyContent(FlexAlign.End)
+        .backgroundColor($r('app.color.backcolor'))
 
-        // 功能卡片容器
         Column() {
-          // 用户信息卡片
           Column() {
             Row() {
               Image($r('app.media.user_avatar'))
@@ -61,11 +47,9 @@ struct User {
                 Text('Rayawa')
                   .fontSize(18)
                   .fontWeight(FontWeight.Bold)
-                  .fontColor('#333333')
 
                 Text('欢迎回来！')
                   .fontSize(14)
-                  .fontColor('#666666')
                   .margin({ top: 4 })
               }
               .margin({ left: 10 })
@@ -93,7 +77,6 @@ struct User {
 
                 Text('更新日志')
                   .fontSize(16)
-                  .fontColor('#333333')
                   .margin({ left: 12 })
               }
 
@@ -110,7 +93,6 @@ struct User {
 
             Divider()
               .strokeWidth(0.5)
-              .color('#f0f0f0')
               .margin({ left: 16, right: 16 })
 
             // 联系我们
@@ -123,7 +105,6 @@ struct User {
 
                 Text('联系我们')
                   .fontSize(16)
-                  .fontColor('#333333')
                   .margin({ left: 12 })
               }
 
@@ -140,7 +121,6 @@ struct User {
 
             Divider()
               .strokeWidth(0.5)
-              .color('#f0f0f0')
               .margin({ left: 16, right: 16 })
 
             // 关于
@@ -153,7 +133,6 @@ struct User {
 
                 Text('关于应用')
                   .fontSize(16)
-                  .fontColor('#333333')
                   .margin({ left: 12 })
               }
 
@@ -168,7 +147,7 @@ struct User {
             .justifyContent(FlexAlign.SpaceBetween)
             .padding({ left: 16, right: 16 })
           }
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.background'))
           .borderRadius(16)
           .shadow({ radius: 8, color: '#1a000000', offsetX: 0, offsetY: 2 })
           .width('90%')
@@ -177,8 +156,8 @@ struct User {
           // 底部信息
           Text('Version 1.0.0')
             .fontSize(12)
-            .fontColor('#999999')
-            .margin({ top: 30, bottom: 20 })
+            .fontColor('#888')
+            .margin({ top: 20, bottom: 20 })
         }
         .width('100%')
         .alignItems(HorizontalAlign.Center)
@@ -187,7 +166,6 @@ struct User {
       .height('100%')
     }
     .width('100%')
-    .height('100%')
-    .backgroundColor('#f8f9fa')
+    .backgroundColor($r('app.color.backcolor'))
   }
 }

@@ -42,6 +42,7 @@ export struct MainPage {
   @State columnsTemplateWidth: string = '1fr 1fr 1fr';
   private hasTriggered: boolean = false;
   @State WaterFlow: boolean = true;
+  @State refreshTrigger: number = 0;
 
   async aboutToAppear() {
     await this.loadItems();
@@ -205,8 +206,9 @@ export struct MainPage {
     .justifyContent(FlexAlign.Start)
   }
 
-  private RefreshPage(){
-
+  private RefreshPage() {
+    this.WaterFlow = !this.WaterFlow;
+    this.WaterFlow = !this.WaterFlow;
   }
 
   private handlePinchOut() {
