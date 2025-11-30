@@ -38,7 +38,7 @@ struct contact {
         Rect()
           .width('100%')
           .height(0.5)
-          .fill("#a6d5d5d5")
+          .fill($r('app.color.border'))
           .position({ x: 0, y: 78 })
 
       }

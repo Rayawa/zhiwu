@@ -49,7 +49,7 @@ export struct AddItemPage {
         Rect()
           .width('100%')
           .height(0.8)
-          .fill("#a6d5d5d5")
+          .fill($r('app.color.border'))
       }
       .width('100%')
       .backgroundColor($r('app.color.backcolor'))

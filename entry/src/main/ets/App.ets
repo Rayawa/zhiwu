@@ -1,4 +1,3 @@
-// 应用入口组件
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import hilog from '@ohos.hilog';
 import { window } from '@kit.ArkUI';
@@ -16,7 +15,6 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     hilog.info(0x0000, 'EntryAbility', 'Ability onWindowStageCreate');
 
-    // 方案1：Promise 方式（推荐）
     windowStage.loadContent('pages/MainPage')
       .then(() => {
         hilog.info(0x0000, 'EntryAbility', 'Succeeded in loading the content');
