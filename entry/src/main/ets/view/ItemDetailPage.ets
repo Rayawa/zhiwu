@@ -184,17 +184,15 @@ export struct ItemDetailPage {
   }
 
   private editItem() {
-    if (this.item) {
-      AlertDialog.show({
-        title: '提示',
-        message: '编辑功能暂未实现',
-        confirm: {
-          value: '确定',
-          action: () => {}
-        }
-      });
-    }
+    if (!this.item) return;
+    router.pushUrl({
+      url: 'view/EditItemPage',
+      params: {
+        itemId: this.item.id
+      }
+    });
   }
+
 
   private showDeleteDialog() {
     if (this.item) {

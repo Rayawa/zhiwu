@@ -1,4 +1,5 @@
 import { Item } from '../../model/ItemModel';
+import { prompt } from '@kit.ArkUI';
 
 @Component
 export struct ItemCard {
@@ -80,7 +81,10 @@ export struct ItemCard {
       this.onItemClick();
     })
     .gesture(
-      LongPressGesture({ repeat: false }).onAction(() => {this.onDeleteClick();})
+      LongPressGesture({ repeat: false }).onAction(() => {
+        this.onDeleteClick();
+        prompt.showToast({ message: '删除物品', duration: 500 });
+      })
     )
   }
 

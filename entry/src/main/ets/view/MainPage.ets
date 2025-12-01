@@ -63,6 +63,25 @@ export struct MainPage {
             .fontWeight(FontWeight.Bold)
             .margin({ left: 15 })
           Row() {
+            Image($r('app.media.switch'))
+              .height(24).width(24)
+              .margin({ right: 30 })
+              .onClick(()=>{
+                this.WaterFlow = !this.WaterFlow;
+                if (this.WaterFlow) {
+                  prompt.showToast({
+                    message: '切换为瀑布流',
+                    duration: 500
+                  });
+                }
+                else {
+                  prompt.showToast({
+                    message: '切换为列表',
+                    duration: 500
+                  });
+                }
+
+              })
             Image($r('app.media.statistics'))
               .height(24).width(24)
               .margin({ right: 30 })
@@ -129,7 +148,7 @@ export struct MainPage {
               .columnsGap(6)
               .rowsGap(6)
             } else {
-              List({ space: 12 }) {
+              List({ space: 10 }) {
                 LazyForEach(this.dataSource, (item: Item) => {
                   ListItem() {
                     ListCard({
@@ -176,7 +195,7 @@ export struct MainPage {
         )
         .backgroundColor($r('app.color.backcolor'))
         .width('95%')
-        .margin({ top: 10, bottom: 20 })
+        // .margin({ top: 10, bottom: 20 })
       }
       .width('100%')
       .layoutWeight(1)

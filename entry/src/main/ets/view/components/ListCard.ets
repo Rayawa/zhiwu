@@ -1,4 +1,5 @@
 import { Item } from '../../model/ItemModel';
+import { prompt } from '@kit.ArkUI';
 
 @Component
 export struct ListCard {
@@ -30,7 +31,6 @@ export struct ListCard {
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .layoutWeight(1.5)
-
 
       Column() {
         Text(this.item.category)
@@ -73,9 +73,10 @@ export struct ListCard {
       .alignItems(HorizontalAlign.End)
       .layoutWeight(1)
     }
-    .width('100%')
     .justifyContent(FlexAlign.SpaceBetween)
     .alignItems(VerticalAlign.Center)
+    .width('100%')
+    .padding(8)
     .backgroundColor($r('app.color.background'))
     .borderRadius(12)
     .borderWidth(1)
@@ -86,20 +87,15 @@ export struct ListCard {
       offsetX: 0,
       offsetY: 2
     })
-    .padding({ left: 16, right: 16, top: 12, bottom: 12 })
-    .margin({bottom: 4})
     .onClick(() => {
       this.onItemClick();
     })
     .gesture(
-      LongPressGesture({ repeat: false }).onAction(() => {this.onDeleteClick();})
+      LongPressGesture({ repeat: false }).onAction(() => {
+        this.onDeleteClick();
+        prompt.showToast({ message: '删除物品', duration: 500 });
+      })
     )
-
-
-  }
-
-  isDarkMode() {
-    throw new Error('Method not implemented.');
   }
 
   private calculateDays(acquireDate: Date): number {

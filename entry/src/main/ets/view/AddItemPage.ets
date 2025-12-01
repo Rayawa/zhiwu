@@ -238,7 +238,7 @@ export struct AddItemPage {
   private async saveItem() {
     // 表单验证
     if (!this.name.trim()) {
-      prompt.showToast({ message: '请输入物品名称', duration: 500 });
+
       return;
     }
 
