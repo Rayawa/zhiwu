@@ -144,6 +144,10 @@ export struct ItemDetailPage {
     .alignItems(HorizontalAlign.Center)
     .justifyContent(FlexAlign.Start)
   }
+  private RefreshPage() {
+
+  }
+
 
   private async loadItemDetail(itemId: string) {
     this.isLoading = true;

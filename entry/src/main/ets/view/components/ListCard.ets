@@ -77,6 +77,7 @@ export struct ListCard {
     .alignItems(VerticalAlign.Center)
     .width('100%')
     .padding(8)
+    .margin({top:5,bottom:10})
     .backgroundColor($r('app.color.background'))
     .borderRadius(12)
     .borderWidth(1)

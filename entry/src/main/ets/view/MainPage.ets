@@ -49,6 +49,7 @@ export struct MainPage {
   }
   async onPageShow() {
     await this.loadItems();
+    await this.RefreshPage();
   }
 
   build() {
@@ -148,7 +149,7 @@ export struct MainPage {
               .columnsGap(6)
               .rowsGap(6)
             } else {
-              List({ space: 10 }) {
+              List() {
                 LazyForEach(this.dataSource, (item: Item) => {
                   ListItem() {
                     ListCard({
@@ -195,7 +196,7 @@ export struct MainPage {
         )
         .backgroundColor($r('app.color.backcolor'))
         .width('95%')
-        // .margin({ top: 10, bottom: 20 })
+        .margin(this.WaterFlow? { top: 10, bottom: 20 }:0)
       }
       .width('100%')
       .layoutWeight(1)
@@ -226,7 +227,6 @@ export struct MainPage {
   }
 
   private RefreshPage() {
-    this.WaterFlow = !this.WaterFlow;
     this.WaterFlow = !this.WaterFlow;
   }
 
